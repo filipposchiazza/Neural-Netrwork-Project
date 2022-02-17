@@ -1,6 +1,7 @@
 "Diamo inizio al gioco...vediamo se mi ricordo ancora come si fa"
 
 import numpy as np
+import activation_functions as act
 
 class Ann:
     
@@ -43,8 +44,25 @@ class Ann:
             self.weights.append(w)
         
     
-    def _forward_prop(self):
-        pass
+    def _forward_prop(self, inputs, activation_func):
+        
+        self.activation_func = activation_func
+        activations = [1] + inputs
+        
+        for i in range(len(self.layers) - 1):
+            # Calculate the linear combination between inputs of the previous layer and weights of the current one
+            linear_part = np.dot(activations, self.weights[i])       # This is a numpy array!!
+            
+            # Apply the activation function to the linear part
+            activations = self.activation_func(linear_part)
+            
+            # Add the first term equal to 1 in order to consider the bias
+            activations = np.insert(activations, 0, 1)
+        
+        # Remove the addictional term at the beginning of the output array
+        activations = np.delete(activations, 0)
+        return activations
+            
     
     def _backward_prop(self):
         pass
@@ -59,5 +77,10 @@ class Ann:
         pass
     
     
+if __name__ == '__main__':
     
+    #nn = Ann(5, [4, 3], 2)
+    #result = nn.forward_prop([1, 2, 3, 4, 5], act.deriv_sigmoid)
+    #print(result)
+    pass
         
