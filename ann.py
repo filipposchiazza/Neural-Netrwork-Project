@@ -32,26 +32,48 @@ class Ann:
         
         
         self.num_inputs = num_inputs
-        self.num_hidden = num_hidden
+        self.num_hidden = np.array(num_hidden)
         self.num_outputs = num_outputs
-        
-        self.layers = [self.num_inputs] + self.num_hidden + [self.num_outputs] 
+        self.layers = np.concatenate(([self.num_inputs], self.num_hidden, [self.num_outputs]))
         
         self.weights = []
         
-        for i in range (len(self.layers) - 1):
-            w = np.random.rand(self.layers[i] + 1, self.layers[i+1])
-            self.weights.append(w)
+        for i in range (self.layers.size - 1):
+            w = np.random.rand(int(self.layers[i]) + 1, int(self.layers[i+1]))
+            self.weights.append(w)      
+        # Attention: here weights is a list of bi-dimensional numpy arrays
+        #self.weights = np.array(self.weights)
         
-    
-    def _forward_prop(self, inputs, activation_func):
+    def forward_prop(self, inputs, activation_func):
+        
+        """Perform the forward propagation
+        
+        Parameters
+        ----------
+        inputs : array_like
+            Vector of inputs for the Neural Network
+        activation_func : function
+            Activation function used by each neuron to produce its output
+        
+        Returns
+        -------
+        out : array_like
+            Array of outputs of the neural network
+            
+        Example
+        -------
+        >> ann.Ann(4, [3, 2], 2)
+        >> result = Ann.forward_prop([10, 20, 30, 40], sigmoid)
+        
+        """
         
         self.activation_func = activation_func
-        activations = [1] + inputs
+        activations = np.array(inputs)
+        activations = np.insert(activations, 0, 1)
         
-        for i in range(len(self.layers) - 1):
+        for i in range(self.layers.size - 1):
             # Calculate the linear combination between inputs of the previous layer and weights of the current one
-            linear_part = np.dot(activations, self.weights[i])       # This is a numpy array!!
+            linear_part = np.dot(activations, self.weights[i])      
             
             # Apply the activation function to the linear part
             activations = self.activation_func(linear_part)
@@ -64,10 +86,10 @@ class Ann:
         return activations
             
     
-    def _backward_prop(self):
+    def backward_prop(self):
         pass
     
-    def _gradient_descendent(self):
+    def gradient_descendent(self):
         pass
     
     def train(self):
@@ -79,8 +101,8 @@ class Ann:
     
 if __name__ == '__main__':
     
-    #nn = Ann(5, [4, 3], 2)
-    #result = nn.forward_prop([1, 2, 3, 4, 5], act.deriv_sigmoid)
-    #print(result)
+    nn = Ann(1, [], 2)
+    result = nn.forward_prop([0.5], act.deriv_sigmoid)
+    print(result)
     pass
         
