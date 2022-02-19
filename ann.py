@@ -38,11 +38,26 @@ class Ann:
         
         self.weights = []
         
-        for i in range (self.layers.size - 1):
+        for i in range (len(self.layers) - 1):
             w = np.random.rand(int(self.layers[i]) + 1, int(self.layers[i+1]))
             self.weights.append(w)      
         # Attention: here weights is a list of bi-dimensional numpy arrays
-        #self.weights = np.array(self.weights)
+        
+        # Create a list of array that will store the values of the neuron's activations
+        activations = []
+        for i in range (len(self.layers)):
+            single_layer = np.zeros(self.layers[i])
+            activations.append(single_layer)
+        self.activations = activations
+        
+        # Create a list of array that will store the derivatives
+        derivatives = []
+        for i in range(len(self.layers) - 1):
+            single_deriv_matrix = np.zeros((self.layers[i] + 1, self.layers[i+1]))
+            derivatives.append(single_deriv_matrix)
+        self.derivatives = derivatives
+        
+        
         
     def forward_prop(self, inputs, activation_func):
         
