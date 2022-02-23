@@ -36,26 +36,43 @@ class Ann:
         self.num_outputs = num_outputs
         self.layers = np.concatenate(([self.num_inputs], self.num_hidden, [self.num_outputs]))
         
-        self.weights = []
-        
+        # Create weights and initialize them with random values
+        self.weights = []       
         for i in range (len(self.layers) - 1):
-            w = np.random.rand(int(self.layers[i]) + 1, int(self.layers[i+1]))
+            w = np.random.rand(int(self.layers[i]) , int(self.layers[i+1]))
             self.weights.append(w)      
         # Attention: here weights is a list of bi-dimensional numpy arrays
         
-        # Create a list of array that will store the values of the neuron's activations
-        activations = []
-        for i in range (len(self.layers)):
-            single_layer = np.zeros(self.layers[i])
-            activations.append(single_layer)
-        self.activations = activations
+        # Create biases and initialize them with random values
+        self.biases = []
+        for i in range (len(self.layers) - 1):
+            b = np.random.rand(int(self.layers[i+1]))
+            self.biases.append(b)
         
-        # Create a list of array that will store the derivatives
-        derivatives = []
+        # Create a list of array that will store the values of the neuron's linear combinations
+        self.linear_comb = []
+        for i in range (len(self.layers) - 1):
+            single_layer = np.zeros(int(self.layers[i+1]))
+            self.linear_comb.append(single_layer)
+              
+        
+        # Create a list of array that will store the values of the neuron's activations
+        self.activations = []
+        for i in range (len(self.layers)):
+            single_layer = np.zeros(int(self.layers[i])) 
+            self.activations.append(single_layer)
+        
+        # Create a list of array that will store the weights' derivatives
+        self.weights_deriv = []
         for i in range(len(self.layers) - 1):
-            single_deriv_matrix = np.zeros((self.layers[i] + 1, self.layers[i+1]))
-            derivatives.append(single_deriv_matrix)
-        self.derivatives = derivatives
+            d_w = np.zeros((int(self.layers[i]) , int(self.layers[i+1])))
+            self.weights_deriv.append(d_w)
+        
+        # Create a list of array that will store the biases' derivatives
+        self.biases_deriv = []
+        for i in range (len(self.layers) - 1):
+            d_b = np.random.rand(int(self.layers[i+1]))
+            self.biases_deriv.append(d_b)
         
         
         
@@ -84,26 +101,38 @@ class Ann:
         
         self.activation_func = activation_func
         activations = np.array(inputs)
-        activations = np.insert(activations, 0, 1)
+        self.activations[0] = activations
         
         for i in range(self.layers.size - 1):
             # Calculate the linear combination between inputs of the previous layer and weights of the current one
-            linear_part = np.dot(activations, self.weights[i])      
+            z = np.dot(activations, self.weights[i]) + self.biases[i]
+            self.linear_comb[i] = z
             
             # Apply the activation function to the linear part
-            activations = self.activation_func(linear_part)
+            activations = self.activation_func(z)
             
-            # Add the first term equal to 1 in order to consider the bias
-            activations = np.insert(activations, 0, 1)
-        
-        # Remove the addictional term at the beginning of the output array
-        activations = np.delete(activations, 0)
+            # Store the activations in object attribute self.activations
+            self.activations[i+1] = activations
+
         return activations
             
     
-    def backward_prop(self):
-        pass
-    
+    def backward_prop(self, error, activation_deriv):
+        for i in reversed(range(len(self.weights_deriv))):
+            z = self.linear_comb[i]    
+            delta = error * activation_deriv(z)
+            delta_reshaped = delta.reshape(delta.shape[0], -1).T          
+            current_activation = self.activations[i]
+            current_activation_reshaped = current_activation.reshape(current_activation.shape[0], -1)
+            
+            self.weights_deriv[i] = np.dot(current_activation_reshaped, delta_reshaped)
+            self.biases_deriv[i] = delta
+            
+            error = np.dot(delta, self.weights[i].T)
+            
+            
+            
+            
     def gradient_descendent(self):
         pass
     
@@ -116,8 +145,9 @@ class Ann:
     
 if __name__ == '__main__':
     
-    nn = Ann(1, [], 2)
-    result = nn.forward_prop([0.5], act.deriv_sigmoid)
+    nn = Ann(3, [2], 1)
+    result = nn.forward_prop([0.5, 0.7, 0.2], act.deriv_sigmoid)
+    derivate = nn.backward_prop(0.2, act.deriv_sigmoid)
     print(result)
     pass
         
