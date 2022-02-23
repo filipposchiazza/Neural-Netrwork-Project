@@ -2,6 +2,7 @@
 
 import numpy as np
 import activation_functions as act
+from random import random
 
 class Ann:
     
@@ -141,10 +142,37 @@ class Ann:
         for i in range(len(self.weights)):
             self.weights[i] -= learning_rate*self.weights_deriv[i]
             self.biases[i] -= learning_rate*self.biases_deriv[i]
+        return self.weights, self.biases
     
     
-    def train(self):
-        pass
+    def train(self, inputs, targets, epochs, learning_rate, activation_function, activation_derivative):
+        
+        for i in range(epochs):
+            
+            sum_error = 0
+            
+            for single_input, target in zip(inputs, targets):
+                
+                # forward propagation
+                output = self.forward_prop(single_input, activation_function)
+                
+                # calculate the error
+                error = output - target
+                
+                # backpropagation
+                self.backward_prop(error, activation_derivative)
+                
+                # apply gradient descendent
+                self.gradient_descendent(learning_rate)
+                
+                # evaluate the error for each input
+                sum_error += 0.5 * np.linalg.norm(error)**2
+            
+            print("Error: {} at epoch {}".format(sum_error, i))
+                
+                
+            
+        
     
     def predict(self):
         pass
@@ -153,7 +181,14 @@ class Ann:
 if __name__ == '__main__':
     
     nn = Ann(2, [5], 1)
-    #create dummy data
+    
+    inputs = np.array([[random() / 2 for _ in range(2)] for _ in range(1000)])
+    targets = np.array([[i[0] + i[1]] for i in inputs])
+    
+    nn.train(inputs, targets, 50, 10, act.sigmoid, act.deriv_sigmoid)
+    
+    
+"""    #create dummy data
     data = [0.1, 0.3]
     target = [0.3]
     #forward propagation
@@ -163,5 +198,5 @@ if __name__ == '__main__':
     #backpropagation
     nn.backward_prop(error, act.deriv_sigmoid)
     #gradient descend
-    nn.gradient_descendent(0.1)
+    nn.gradient_descendent(0.1)"""
         
