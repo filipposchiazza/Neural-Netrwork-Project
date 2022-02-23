@@ -117,7 +117,7 @@ class Ann:
         return activations
             
     
-    def backward_prop(self, error, activation_deriv):
+    def backward_prop(self, error, activation_deriv, verbose = False):
         for i in reversed(range(len(self.weights_deriv))):
             z = self.linear_comb[i]    
             delta = error * activation_deriv(z)
@@ -129,6 +129,12 @@ class Ann:
             self.biases_deriv[i] = delta
             
             error = np.dot(delta, self.weights[i].T)
+            
+            if verbose == True:
+                print ("Derivatives for W{}: {}".format(i, self.weights_deriv[i]))
+                print ("Derivatives for B{}: {}". format(i, self.biases_deriv[i]))
+            
+        return error
             
             
             
@@ -145,9 +151,14 @@ class Ann:
     
 if __name__ == '__main__':
     
-    nn = Ann(3, [2], 1)
-    result = nn.forward_prop([0.5, 0.7, 0.2], act.deriv_sigmoid)
-    derivate = nn.backward_prop(0.2, act.deriv_sigmoid)
-    print(result)
-    pass
+    nn = Ann(2, [5], 1)
+    #create dummy data
+    data = [0.1, 0.3]
+    target = [0.3]
+    #forward propagation
+    output = nn.forward_prop(data, act.deriv_sigmoid)
+    #calculate the error
+    error = target - output
+    #backpropagation
+    nn.backward_prop(error, act.deriv_sigmoid, verbose=True)
         
