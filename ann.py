@@ -174,8 +174,10 @@ class Ann:
             
         
     
-    def predict(self):
-        pass
+    def predict(self, inputs):
+        prediction = self.forward_prop(inputs, self.activation_func)
+        return prediction
+        
     
     
 if __name__ == '__main__':
