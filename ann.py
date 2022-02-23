@@ -137,10 +137,11 @@ class Ann:
         return error
             
             
-            
-            
-    def gradient_descendent(self):
-        pass
+    def gradient_descendent(self, learning_rate):
+        for i in range(len(self.weights)):
+            self.weights[i] -= learning_rate*self.weights_deriv[i]
+            self.biases[i] -= learning_rate*self.biases_deriv[i]
+    
     
     def train(self):
         pass
@@ -160,5 +161,7 @@ if __name__ == '__main__':
     #calculate the error
     error = target - output
     #backpropagation
-    nn.backward_prop(error, act.deriv_sigmoid, verbose=True)
+    nn.backward_prop(error, act.deriv_sigmoid)
+    #gradient descend
+    nn.gradient_descendent(0.1)
         
