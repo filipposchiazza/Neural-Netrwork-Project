@@ -2,27 +2,29 @@
 
 import numpy as np
 
+##############################################################################
 
 def sigmoid(x):
     "Definition of the sigmoid function"
     return 1 / (1 + np.exp(-x))
 
+
 def deriv_sigmoid(x):
     "Definition of the derivative of the sigmoid function"
     return sigmoid(x) * (1 - sigmoid(x))
 
+##############################################################################
 
 def relu(x):
     "Definition of the Rectified Linear Unit function"
-    return max(0, x)
+    return x * (x>0)
+
 
 def deriv_relu(x):
     "Definition of the derivative of the Rectified Linear Unit function"
-    if x<0:
-        return 0
-    else:
-        return 1
+    return 1 * (x>0)
    
+##############################################################################
     
 def tanh(x):
     "Definition of the hyperbolic function tanh"
@@ -30,7 +32,9 @@ def tanh(x):
     den = 1 + np.exp(-2 * x)
     return num/den
 
+
 def deriv_tanh(x):
     "Definition of the derivative of the hyperbolic function tanh"
     return 1 - tanh(x)**2
 
+##############################################################################
