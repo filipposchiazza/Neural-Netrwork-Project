@@ -18,15 +18,18 @@ def mse_deriv(prediction, target):
 
 ###############################################################################
 
-# Cross Entropy is used for classification tasks
-def cross_entropy(prediction, target):
-    "Cross Entropy loss function"
-    log = np.log(prediction)
-    ylog = target * log
-    return -np.sum(ylog)
+# Binary Cross Entropy is used for binary classification tasks
+def binary_cross_entropy(prediction, target):
+    "Binary Cross Entropy loss function"
+    term_1 = target * np.log(prediction + 1e-15)
+    term_2 = (1 - target) * np.log(1 - prediction + 1e-15)
+    return -(term_1 + term_2)
 
-def cross_entropy_deriv(prediction, target):
+def binary_cross_entropy_deriv(prediction, target):
     "Derivative of the Cross Entropy"
-    return - target / prediction
+    #prediction = np.clip(prediction, 1e-15, 1e-15)
+    term_1 = target / prediction 
+    term_2 = (1 - target) / (1 - prediction)
+    return term_2 - term_1
 
 ###############################################################################
