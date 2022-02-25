@@ -15,6 +15,18 @@ def deriv_sigmoid(x):
 
 ##############################################################################
 
+def softmax(x):
+    "Definition of the softmax activation function"
+    num = np.exp(x)
+    den = np.sum(num)
+    return num / den
+
+def deriv_softmax(x):
+    num = np.exp(x)
+    summation = np.sum(num)
+    return (num**2 + num*summation) / summation**2
+##############################################################################
+
 def relu(x):
     "Definition of the Rectified Linear Unit function"
     return x * (x>0)
