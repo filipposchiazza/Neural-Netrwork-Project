@@ -106,6 +106,7 @@ def test_num_biases_derivatives(inp, hidd, out):
        hidd = st.lists(st.sampled_from(num_neuron), min_size=0, max_size=10),
        out = st.integers(min_value=1, max_value=50))
 def test_forward_prop(inp, hidd, out):
+    # Test that the dimension of the forward propagation result is the same as the number of output layers of the neural network
     data = np.random.randn(inp)
     network = ann.Ann(inp, hidd, out)
     assert network.num_outputs == network._forward_prop(data, act.sigmoid).size
@@ -118,6 +119,7 @@ def test_forward_prop(inp, hidd, out):
        hidd = st.lists(st.sampled_from(num_neuron), min_size=0, max_size=10),
        out = st.integers(min_value=1, max_value=50))
 def test_weights_deriv_after_backprop(inp, hidd, out):
+    # Test that, after backpropagation, the dimensionalities of the weights'derivatives is still the same as the ones of weights 
     network = ann.Ann(inp, hidd, out)
     error = np.random.uniform(-100, 100, out)
     network.activation_func = act.sigmoid
@@ -132,8 +134,10 @@ def test_weights_deriv_after_backprop(inp, hidd, out):
        hidd = st.lists(st.sampled_from(num_neuron), min_size=0, max_size=10),
        out = st.integers(min_value=1, max_value=50))
 def test_biases_deriv_after_backprop(inp, hidd, out):
+    # Test that, after backpropagation, the dimensionalities of the biases'derivatives is still the same as the ones of biases
     network = ann.Ann(inp, hidd, out)
     error = np.random.uniform(-100, 100, out)
+    network.activation_func = act.sigmoid
     network._backward_prop(error, act.deriv_sigmoid)
     
     for i in range(len(network.biases)):
@@ -143,6 +147,47 @@ def test_biases_deriv_after_backprop(inp, hidd, out):
 ##########################################################################################################################
 
 # Test the gradient descendent method
+
+@given(inp = st.integers(min_value=1, max_value=1e5),
+       hidd = st.lists(st.sampled_from(num_neuron), min_size=0, max_size=10),
+       out = st.integers(min_value=1, max_value=50),
+       learning_rate = st.floats(min_value=0.0001, max_value=10, allow_nan=False))
+def test_weights_structure_after_gradient (inp, hidd, out, learning_rate):
+    # Test that the dimensionalities of the weights is still the same after the gradient descendent
+    network = ann.Ann(inp, hidd, out)
+    error = np.random.uniform(-100, 100, out)
+    network.activation_func = act.sigmoid
+    network._backward_prop(error, act.deriv_sigmoid)
+    
+    previous_weights = []
+    for i in range(len(network.layers) - 1):
+        previous_weights.append(np.copy(network.weights[i]))
+    
+    network._gradient_descendent(learning_rate)
+    
+    for i in range(len(network.weights)):
+        for j in range(len(network.weights[i])):
+            assert network.weights[i][j].size == previous_weights[i][j].size
+            
+@given(inp = st.integers(min_value=1, max_value=1e5),
+       hidd = st.lists(st.sampled_from(num_neuron), min_size=0, max_size=10),
+       out = st.integers(min_value=1, max_value=50),
+       learning_rate = st.floats(min_value=0.0001, max_value=10, allow_nan=False))
+def test_biases_structure_after_gradient (inp, hidd, out, learning_rate):
+    # Test if the dimensionalities of the biases is still the same after the gradient descendent
+    network = ann.Ann(inp, hidd, out)
+    error = np.random.uniform(-100, 100, out)
+    network.activation_func = act.sigmoid
+    network._backward_prop(error, act.deriv_sigmoid)
+    
+    previous_biases = []
+    for i in range(len(network.layers) - 1):
+        previous_biases.append(np.copy(network.biases[i]))
+    
+    network._gradient_descendent(learning_rate)
+    
+    for i in range(len(network.biases)):
+        assert network.biases[i].size == previous_biases[i].size
 
 ##########################################################################################################################
 
