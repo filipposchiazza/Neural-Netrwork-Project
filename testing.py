@@ -9,7 +9,7 @@ import activation_functions as act
 
 
 max_num_neurons = 10
-num_neuron = [i for i in range(max_num_neurons + 1)]
+num_neuron = [i for i in range(1, max_num_neurons + 1)]
 
 ##################################################################################################################################
 
@@ -99,16 +99,64 @@ def test_num_biases_derivatives(inp, hidd, out):
         assert network.biases[i].size == network.biases_deriv[i].size
 
 ##########################################################################################################################
- 
+
+# Test the forward propagation method
+
 @given(inp = st.integers(min_value=1, max_value=1e5),
        hidd = st.lists(st.sampled_from(num_neuron), min_size=0, max_size=10),
        out = st.integers(min_value=1, max_value=50))
 def test_forward_prop(inp, hidd, out):
     data = np.random.randn(inp)
     network = ann.Ann(inp, hidd, out)
-    assert network.num_outputs == network.forward_prop(data, act.sigmoid).size
+    assert network.num_outputs == network._forward_prop(data, act.sigmoid).size
     
-##########################################################################################################################    
+########################################################################################################################## 
+
+# Test the backward propagation method
+
+@given(inp = st.integers(min_value=1, max_value=1e5),
+       hidd = st.lists(st.sampled_from(num_neuron), min_size=0, max_size=10),
+       out = st.integers(min_value=1, max_value=50))
+def test_weights_deriv_after_backprop(inp, hidd, out):
+    network = ann.Ann(inp, hidd, out)
+    error = np.random.uniform(-100, 100, out)
+    network.activation_func = act.sigmoid
+    network._backward_prop(error, act.deriv_sigmoid)
+    
+    
+    for i in range(len(network.weights)):
+        for j in range(len(network.weights[i])):
+            assert network.weights_deriv[i][j].size == network.weights[i][j].size
+   
+@given(inp = st.integers(min_value=1, max_value=1e5),
+       hidd = st.lists(st.sampled_from(num_neuron), min_size=0, max_size=10),
+       out = st.integers(min_value=1, max_value=50))
+def test_biases_deriv_after_backprop(inp, hidd, out):
+    network = ann.Ann(inp, hidd, out)
+    error = np.random.uniform(-100, 100, out)
+    network._backward_prop(error, act.deriv_sigmoid)
+    
+    for i in range(len(network.biases)):
+        assert network.biases_deriv[i].size == network.biases[i].size    
+
+
+##########################################################################################################################
+
+# Test the gradient descendent method
+
+##########################################################################################################################
+
+# Test the train method
+
+##########################################################################################################################
+
+# Test the predict method
+
+########################################################################################################################## 
+
+# Test the evaluate method
+
+##########################################################################################################################  
 
 """
 
