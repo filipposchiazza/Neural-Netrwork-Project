@@ -287,6 +287,13 @@ class Ann:
             target = targets[i]
             sum_error += self.loss_func(prediction, target)
         return float(sum_error / n)
+    
+    
+    def get_weights(self):
+        return self.weights
+    
+    def get_biases(self):
+        return self.biases
         
         
 
