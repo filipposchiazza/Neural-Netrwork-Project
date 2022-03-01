@@ -219,16 +219,16 @@ class Ann:
             for single_input, target in zip(inputs, targets):
                 
                 # forward propagation
-                output = self.forward_prop(single_input, activation_function)
+                output = self._forward_prop(single_input, activation_function)
                 
                 # calculate the error
                 error = deriv_loss_fun(output, target)
                 
                 # backpropagation
-                self.backward_prop(error, activation_derivative)
+                self._backward_prop(error, activation_derivative)
                 
                 # apply gradient descendent
-                self.gradient_descendent(learning_rate)
+                self._gradient_descendent(learning_rate)
                 
                 # evaluate the error for each input
                 sum_error += loss_func(output, target)
@@ -256,7 +256,7 @@ class Ann:
         >>> Ann.predict(data)
         
         """
-        prediction = self.forward_prop(inputs, self.activation_func)
+        prediction = self._forward_prop(inputs, self.activation_func)
         return prediction
     
     
@@ -269,22 +269,30 @@ class Ann:
             Data given to the neural network in order to have prediction.
         targets : array_like
             True labels of the data.
-
+        
         Returns
         -------
         float
             Mean error between the targets and the outputs of the neural network evaluated with the loss function.
-
-        """
+            
+        Example
+        -------
+        >>> Ann.evaluate(data, labels)
         
+        """
         sum_error = 0
         n = len(inputs)
         for i in range(len(inputs)):
             prediction = self.predict(inputs[i])
             target = targets[i]
             sum_error += self.loss_func(prediction, target)
-        return sum_error / n
+        return float(sum_error / n)
+        
+        
 
+
+
+    
         
     
 
