@@ -3,7 +3,7 @@
 import numpy as np
 import activation_functions as act
 import loss_functions as lf
-import os.path
+import pickle
 from random import random
 
 
@@ -300,8 +300,33 @@ class Ann:
     def set_parameters(self, saved_weights, saved_biases):
         self.weights = saved_weights
         self.biases = saved_biases
+    
+    def save_parameters(self, file_name, path='./'):
+        """Save the weights and biases of the neural network in a .pkl file.
+        
 
+        Parameters
+        ----------
+        file_name : string
+            Name of the file where weights and biases will be stored. The file will be a .pkl and it is possible to add or not the extension.
+        path : string, optional
+            Directory where the file will be saved. If the file already exists, it will be overwritten. The default is './'.
 
+        Returns
+        -------
+        string:
+            Message of save confirmation.
+
+        """
+        
+        if file_name[-4:] != '.pkl':
+            file_name += '.pkl'
+        total_name = path + file_name
+        parameters = [self.biases, self.weights]
+        pickle.dump(parameters, open(total_name, 'wb'))
+        return 'Save completed successfully'
+
+    
         
         
         
