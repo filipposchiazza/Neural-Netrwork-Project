@@ -3,7 +3,9 @@
 import numpy as np
 import activation_functions as act
 import loss_functions as lf
+import os.path
 from random import random
+
 
 class Ann:
     
@@ -294,6 +296,13 @@ class Ann:
     
     def get_biases(self):
         return self.biases
+    
+    def set_parameters(self, saved_weights, saved_biases):
+        self.weights = saved_weights
+        self.biases = saved_biases
+
+
+        
         
         
 
@@ -302,10 +311,6 @@ class Ann:
     
         
     
-
-
-
-
 
 
 
