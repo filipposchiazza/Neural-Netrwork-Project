@@ -329,7 +329,8 @@ class Ann:
         return 'Save completed successfully'
     
     
-    def load_parameters(self, file_name):
+    @classmethod
+    def load_parameters(cls, file_name):
         """ Load from a file the weights, the biases and the number of neurons for each layer.
         
         Parameters
@@ -351,14 +352,46 @@ class Ann:
             Number of neurons in the output layer of the neural network saved previously.
 
         """
-        
-        parameters = pickle.load(file_name, 'rb')
+        if file_name[-4:] != '.pkl':
+            file_name += '.pkl'
+        parameters = pickle.load(open(file_name, 'rb'))
         num_inputs = parameters[0]
         num_hidd = parameters[1]
         num_outputs = parameters[2]
         biases = parameters[3]
         weights = parameters[4]
         return biases, weights, num_inputs, num_hidd, num_outputs
+    
+    
+    @classmethod
+    def load_and_set_network(cls, file_name):
+        """Create a neural network with weights, biases and number of neuron for each layer stored in "file_name"
+        
+        Parameters
+        ----------
+        file_name : string
+            File source where weights, biases and number of neurons for each layer are stored (look at 'save_parameters' method).
+
+        Returns
+        -------
+        network_loaded : Ann
+            Neural network with weights, biases and number of neuron for each layer stored in the file "file_name"
+
+        """
+        
+        if file_name[-4:] != '.pkl':
+            file_name += '.pkl'
+        parameters = pickle.load(open(file_name, 'rb'))
+        num_inputs = parameters[0]
+        num_hidd = parameters[1]
+        num_outputs = parameters[2]
+        biases = parameters[3]
+        weights = parameters[4]
+        network_loaded = cls(num_inputs, num_hidd, num_outputs)
+        network_loaded.biases = biases
+        network_loaded.weights = weights
+        return network_loaded
+        
         
     
     
