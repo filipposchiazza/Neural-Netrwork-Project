@@ -294,17 +294,19 @@ class Ann:
     def get_weights(self):
         return self.weights
     
+    
     def get_biases(self):
         return self.biases
+    
     
     def set_parameters(self, saved_weights, saved_biases):
         self.weights = saved_weights
         self.biases = saved_biases
+        
     
     def save_parameters(self, file_name, path='./'):
-        """Save the weights and biases of the neural network in a .pkl file.
+        """Save the structure of the network (neurons for each layer), weights and biases of the neural network in a .pkl file.
         
-
         Parameters
         ----------
         file_name : string
@@ -322,9 +324,44 @@ class Ann:
         if file_name[-4:] != '.pkl':
             file_name += '.pkl'
         total_name = path + file_name
-        parameters = [self.biases, self.weights]
+        parameters = [self.num_inputs, self.num_hidden, self.num_outputs, self.biases, self.weights]
         pickle.dump(parameters, open(total_name, 'wb'))
         return 'Save completed successfully'
+    
+    
+    def load_parameters(self, file_name):
+        """ Load from a file the weights, the biases and the number of neurons for each layer.
+        
+        Parameters
+        ----------
+        file_name : string
+            File source where weights, biases and number of neurons for each layer are stored (look at 'save_parameters' method).
+
+        Returns
+        -------
+        biases : list
+            Biases of the neural network saved previously.
+        weights : list
+            Weights of the neural network saved previously.
+        num_inputs : int
+            Number of neurons in the input layer of the neural network saved previously.
+        num_hidden : list
+            Number of neurons in the hidden layers of the neural network saved previously.
+        num_outputs : int
+            Number of neurons in the output layer of the neural network saved previously.
+
+        """
+        
+        parameters = pickle.load(file_name, 'rb')
+        num_inputs = parameters[0]
+        num_hidd = parameters[1]
+        num_outputs = parameters[2]
+        biases = parameters[3]
+        weights = parameters[4]
+        return biases, weights, num_inputs, num_hidd, num_outputs
+        
+    
+    
 
     
         
