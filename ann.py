@@ -137,7 +137,8 @@ class Ann:
         
         for i in reversed(range(len(self.weights_deriv))):
             z = self.linear_comb[i]    
-            delta = error * activation_deriv(z)
+            #delta = error * activation_deriv(z)
+            delta = np.dot(error, activation_deriv(z))
             delta_reshaped = delta.reshape(delta.shape[0], -1).T          
             current_activation = self.activations[i]
             current_activation_reshaped = current_activation.reshape(current_activation.shape[0], -1)
