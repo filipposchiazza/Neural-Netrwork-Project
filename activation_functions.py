@@ -11,7 +11,11 @@ def sigmoid(x):
 
 def deriv_sigmoid(x):
     "Definition of the derivative of the sigmoid function"
-    return sigmoid(x) * (1 - sigmoid(x))
+    lenght = len(x)
+    jacobian = np.zeros((lenght, lenght))
+    for i in range(lenght):
+        jacobian[i][i] = sigmoid(x[i]) * (1 - sigmoid(x[i]))
+    return jacobian
 
 ##############################################################################
 
@@ -22,9 +26,17 @@ def softmax(x):
     return num / den
 
 def deriv_softmax(x):
-    num = np.exp(x)
-    summation = np.sum(num)
-    return (num**2 + num*summation) / summation**2
+    "Definition of the derivative of the softmax function"
+    lenght = len(x)
+    jacobian = np.zeros((lenght, lenght))
+    for i in range(lenght):
+        for j in range(lenght):
+            if i==j:
+                jacobian[i][j] = x[i] * (1 - x[i])
+            else:
+                jacobian[i][j] = - x[i] * x[j]
+    return jacobian
+
 ##############################################################################
 
 def relu(x):
@@ -36,6 +48,19 @@ def deriv_relu(x):
     "Definition of the derivative of the Rectified Linear Unit function"
     return 1 * (x>0)
    
+##############################################################################
+
+def leaky_relu(x, alpha=0.1):
+    y1 = x * (x>0)
+    y2 = alpha * x * (x<=0)
+    return y1 + y2
+
+
+def deriv_leaky_relu(x, alpha=0.1):
+    y1 = 1 * (x>0)
+    y2 = alpha * (x<=0)
+    return y1 + y2
+
 ##############################################################################
     
 def tanh(x):
