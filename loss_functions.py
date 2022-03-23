@@ -26,10 +26,25 @@ def binary_cross_entropy(prediction, target):
     return -(term_1 + term_2)
 
 def binary_cross_entropy_deriv(prediction, target):
-    "Derivative of the Cross Entropy"
+    "Derivative of the Binary Cross Entropy"
     #prediction = np.clip(prediction, 1e-15, 1e-15)
     term_1 = target / prediction 
     term_2 = (1 - target) / (1 - prediction)
     return term_2 - term_1
 
+###############################################################################
+
+clip_value = 1e-20
+# Cross entropy is used for multiple-class classification tasks
+def cross_entropy(prediction, target):
+    "Cross Entropy loss function"
+    prediction = np.clip(prediction, a_min=clip_value, a_max=1)
+    log = np.log(prediction)
+    ylog = target * log
+    return -np.sum(ylog)
+
+def cross_entropy_deriv(prediction, target):
+    "Derivative of the Cross Entropy"
+    return - target/prediction
+    
 ###############################################################################
