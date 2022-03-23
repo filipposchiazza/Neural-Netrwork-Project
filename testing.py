@@ -236,7 +236,15 @@ def test_nan_values_cross_entropy_deriv(target, prediction):
         
 ###########################################################################################################################
 
-
+@given(target = st.lists(st.sampled_from(target_values), min_size=dim, max_size=dim),
+       prediction = st.lists(st.sampled_from(prediction_values), min_size=dim, max_size=dim))
+def test_inf_values_cross_entropy_deriv(target, prediction):
+    "Test that the derivative of the cross entropy does not produce inf values"
+    prediction = np.array(prediction)
+    target = np.array(target)
+    result = lf.cross_entropy_deriv(prediction, target)
+    for i in range(len(result)):
+        assert result[i] > -np.inf and result[i] < np.inf
 
 
 
