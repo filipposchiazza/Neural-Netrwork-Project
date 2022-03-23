@@ -11,7 +11,7 @@ import loss_functions as lf
 
 max_num_neurons = 10
 num_neuron = [i for i in range(1, max_num_neurons + 1)]
-
+"""
 ##################################################################################################################################
 
 # Test the costruction of the neural network (the function __init__)
@@ -204,21 +204,14 @@ def test_biases_structure_after_gradient (inp, hidd, out, learning_rate):
 
 ##########################################################################################################################  
 
-"""
 
-@given(x = st.floats(allow_nan=False))
-def test_range_sigmoid(x):
-    # Test that the result of the Sigmoid function is in the interval [0,1]
-    assert act.sigmoid(x) >= 0 and act.sigmoid(x) <= 1
-   
-"""
 
 
 ###########################################################################################################################
-
+"""
 target_values = [0, 1]
 prediction_values = np.arange(0, 1 + 0.001, 0.001)
-dim = 9
+dim = 9   # da provare a rendere dim variabile durante il test
 
 @given(target = st.lists(st.sampled_from(target_values), min_size=dim, max_size=dim),
        prediction = st.lists(st.sampled_from(prediction_values), min_size=dim, max_size=dim))
@@ -230,4 +223,20 @@ def test_range_cross_entropy(target, prediction):
     assert cross_entropy >= minimum and cross_entropy <= maximum
     
 ###########################################################################################################################
+
+@given(target = st.lists(st.sampled_from(target_values), min_size=dim, max_size=dim),
+       prediction = st.lists(st.sampled_from(prediction_values), min_size=dim, max_size=dim))
+def test_nan_values_cross_entropy_deriv(target, prediction):
+    "Test that the derivative of the cross entropy does not produce nan values"
+    prediction = np.array(prediction)
+    target = np.array(target)
+    result = lf.cross_entropy_deriv(prediction, target)
+    for i in range(len(result)):
+        assert not np.isnan(result[i])
+        
+###########################################################################################################################
+
+
+
+
 
