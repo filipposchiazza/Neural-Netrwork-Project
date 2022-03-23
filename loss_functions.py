@@ -45,6 +45,7 @@ def cross_entropy(prediction, target):
 
 def cross_entropy_deriv(prediction, target):
     "Derivative of the Cross Entropy"
+    prediction = np.clip(prediction, a_min=clip_value, a_max=1)
     return - target/prediction
     
 ###############################################################################
