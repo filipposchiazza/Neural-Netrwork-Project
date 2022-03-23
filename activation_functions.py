@@ -21,7 +21,7 @@ def deriv_sigmoid(x):
 
 def softmax(x):
     "Definition of the softmax activation function"
-    num = np.exp(x)
+    num = np.exp(x - np.max(x))
     den = np.sum(num)
     return num / den
 
