@@ -6,6 +6,7 @@ import hypothesis.strategies as st
 
 import ann
 import activation_functions as act
+import loss_functions as lf
 
 
 max_num_neurons = 10
@@ -211,7 +212,22 @@ def test_range_sigmoid(x):
     assert act.sigmoid(x) >= 0 and act.sigmoid(x) <= 1
    
 """
+
+
+###########################################################################################################################
+
+target_values = [0, 1]
+prediction_values = np.arange(0, 1 + 0.001, 0.001)
+dim = 9
+
+@given(target = st.lists(st.sampled_from(target_values), min_size=dim, max_size=dim),
+       prediction = st.lists(st.sampled_from(prediction_values), min_size=dim, max_size=dim))
+def test_range_cross_entropy(target, prediction):
+    "Test that the result of the cross entropy is in the expected interval [0, -dim*log(clip_value)]"
+    minimum = 0
+    maximum = - dim * np.log(lf.clip_value)
+    cross_entropy = lf.cross_entropy(prediction, target)
+    assert cross_entropy >= minimum and cross_entropy <= maximum
     
-
-
+###########################################################################################################################
 
