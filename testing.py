@@ -205,10 +205,10 @@ def test_biases_structure_after_gradient (inp, hidd, out, learning_rate):
 ##########################################################################################################################  
 
 
-
+"""
 
 ###########################################################################################################################
-"""
+
 target_values = [0, 1]
 prediction_values = np.arange(0, 1 + 0.001, 0.001)
 dim = 9   # da provare a rendere dim variabile durante il test
@@ -246,5 +246,28 @@ def test_inf_values_cross_entropy_deriv(target, prediction):
     for i in range(len(result)):
         assert result[i] > -np.inf and result[i] < np.inf
 
+############################################################################################################################
 
+@given(x = st.floats(allow_infinity=False, allow_nan=False),
+       y = st.floats(allow_infinity=False, allow_nan=False),
+       z = st.floats(allow_infinity=False, allow_nan=False))
+def test_range_softmax_function(x, y, z):
+    "Test the range of the softmax function"
+    inputs = np.array([x, y, z])
+    result = act.softmax(inputs)
+    for i in range(len(result)):
+        assert result[i] >= 0 and result[i] <= 1
 
+############################################################################################################################
+
+@given(x = st.floats(allow_infinity=False, allow_nan=False),
+       y = st.floats(allow_infinity=False, allow_nan=False),
+       z = st.floats(allow_infinity=False, allow_nan=False))
+def test_normalization_softmax_function(x, y, z):
+    "Test that the sum of the elements of the softmax output is equal to one (condition to represent a probability)"
+    inputs = np.array([x, y, z])
+    result = act.softmax(inputs)
+    summation = np.sum(result)
+    assert np.abs(summation - 1) < 1e-15
+
+############################################################################################################################
