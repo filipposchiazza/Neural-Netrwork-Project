@@ -28,13 +28,14 @@ def softmax(x):
 def deriv_softmax(x):
     "Definition of the derivative of the softmax function"
     lenght = len(x)
+    a = softmax(x)
     jacobian = np.zeros((lenght, lenght))
     for i in range(lenght):
         for j in range(lenght):
             if i==j:
-                jacobian[i][j] = x[i] * (1 - x[i])
+                jacobian[i][j] = a[i] * (1 - a[i])
             else:
-                jacobian[i][j] = - x[i] * x[j]
+                jacobian[i][j] = - a[i] * a[j]
     return jacobian
 
 ##############################################################################
