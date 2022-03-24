@@ -79,7 +79,7 @@ class Ann:
             self.biases_deriv.append(d_b)
         
             
-    def _forward_prop(self, inputs, activation_func):
+    def forward_prop(self, inputs, activation_func):
         
         """Perform the forward propagation
         
@@ -97,7 +97,7 @@ class Ann:
         
         """
         
-        self.activation_func = activation_func
+        #self.activation_func = activation_func
         activations = np.array(inputs)
         self.activations[0] = activations
         
@@ -107,11 +107,10 @@ class Ann:
             self.linear_comb[i] = z
             
             # Apply the activation function to the linear part
-            activations = self.activation_func(z)
+            activations = activation_func(z)
             
             # Store the activations in object attribute self.activations
             self.activations[i+1] = activations
-
         return activations
     
     
@@ -214,6 +213,7 @@ class Ann:
 
         """
         self.loss_func = loss_func
+        self.activation_func = activation_function
         n = len(inputs)
         for i in range(epochs):
             
@@ -222,7 +222,7 @@ class Ann:
             for single_input, target in zip(inputs, targets):
                 
                 # forward propagation
-                output = self._forward_prop(single_input, activation_function)
+                output = self.forward_prop(single_input, activation_function)
                 
                 # calculate the error
                 error = deriv_loss_fun(output, target)
@@ -259,7 +259,7 @@ class Ann:
         >>> Ann.predict(data)
         
         """
-        prediction = self._forward_prop(inputs, self.activation_func)
+        prediction = self.forward_prop(inputs, self.activation_func)
         return prediction
     
     
