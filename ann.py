@@ -79,7 +79,7 @@ class Ann:
             self.biases_deriv.append(d_b)
         
             
-    def forward_prop(self, inputs, activation_func):
+    def _forward_prop(self, inputs, activation_func):
         
         """Perform the forward propagation
         
@@ -222,7 +222,7 @@ class Ann:
             for single_input, target in zip(inputs, targets):
                 
                 # forward propagation
-                output = self.forward_prop(single_input, activation_function)
+                output = self._forward_prop(single_input, activation_function)
                 
                 # calculate the error
                 error = deriv_loss_fun(output, target)
@@ -259,7 +259,7 @@ class Ann:
         >>> Ann.predict(data)
         
         """
-        prediction = self.forward_prop(inputs, self.activation_func)
+        prediction = self._forward_prop(inputs, self.activation_func)
         return prediction
     
     
@@ -291,14 +291,28 @@ class Ann:
             sum_error += self.loss_func(prediction, target)
         return float(sum_error / n)
     
+    ###########################################################################################    
+    # get methods
     
     def get_weights(self):
+        """Return a list whose elements are the weight matrices for each couple of layers"""
         return self.weights
     
     
     def get_biases(self):
+        """Return a list whose elements are the bias vectors for each couple of layers"""
         return self.biases
     
+    
+    def get_activation_function(self):
+        """Return the activation function used in the neural network process of training"""
+        return self.activation_func
+    
+    def get_loss_function(self):
+        """Return the loss function used in the neural network process of training"""
+        return self.loss_func
+    
+    ############################################################################################
     
     def set_parameters(self, saved_weights, saved_biases):
         self.weights = saved_weights
@@ -413,11 +427,6 @@ class Ann:
     
 if __name__ == '__main__':
     
-    nn = Ann(2, [2], 1)
-    
-    inputs = np.array([[random() / 2 for _ in range(2)] for _ in range(1000)])
-    targets = np.array([[i[0] + i[1]] for i in inputs])
-    
-    nn.train(inputs, targets, 100, 0.1, act.relu, act.deriv_relu, lf.mse, lf.mse_deriv)
+    print ("Hello")
     
         
