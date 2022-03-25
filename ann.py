@@ -1,10 +1,9 @@
 "Diamo inizio al gioco...vediamo se mi ricordo ancora come si fa"
 
 import numpy as np
+import pickle
 import activation_functions as act
 import loss_functions as lf
-import pickle
-from random import random
 
 
 class Ann:
@@ -97,7 +96,6 @@ class Ann:
         
         """
         
-        #self.activation_func = activation_func
         activations = np.array(inputs)
         self.activations[0] = activations
         
@@ -136,7 +134,6 @@ class Ann:
         
         for i in reversed(range(len(self.weights_deriv))):
             z = self.linear_comb[i]    
-            #delta = error * activation_deriv(z)
             delta = np.dot(error, activation_deriv(z))
             delta_reshaped = delta.reshape(delta.shape[0], -1).T          
             current_activation = self.activations[i]
@@ -176,7 +173,7 @@ class Ann:
         return self.weights, self.biases
     
     
-    def train(self, inputs, targets, epochs, learning_rate, activation_function, activation_derivative, loss_func, deriv_loss_fun):
+    def train(self, inputs, targets, epochs, learning_rate, activation_function, loss_func):
         """ Train method: the neural network update weights and biases, according to the inputs and the targets in order to minimize the loss function
         
         Parameters
@@ -212,9 +209,12 @@ class Ann:
         >>> Ann.train(data, labels, 1000, 0.1, act.sigmoid, act.deriv_sigmoid, lf.mse, lf.mse_deriv)
 
         """
-        self.loss_func = loss_func
-        self.activation_func = activation_function
+        
+        self.set_activation_function(activation_function)
+        self.set_loss_function(loss_func)
+        
         n = len(inputs)
+        
         for i in range(epochs):
             
             sum_error = 0
@@ -222,13 +222,13 @@ class Ann:
             for single_input, target in zip(inputs, targets):
                 
                 # forward propagation
-                output = self._forward_prop(single_input, activation_function)
+                output = self._forward_prop(single_input, self.activation_func)
                 
                 # calculate the error
-                error = deriv_loss_fun(output, target)
+                error = self.loss_func_deriv(output, target)
                 
                 # backpropagation
-                self._backward_prop(error, activation_derivative)
+                self._backward_prop(error, self.act_func_deriv)
                 
                 # apply gradient descendent
                 self._gradient_descendent(learning_rate)
@@ -331,7 +331,7 @@ class Ann:
         if act_func == act.sigmoid:
             self.act_func_deriv = act.deriv_sigmoid
         elif act_func == act.softmax:
-            self.acti_func_deriv = act.deriv_softmax
+            self.act_func_deriv = act.deriv_softmax
         
     
     def set_loss_function(self, loss_func):
@@ -344,6 +344,8 @@ class Ann:
             self.loss_func_deriv = lf.cross_entropy_deriv 
         
     ##########################################################################################
+    
+    #Saving method
     
     def save_parameters(self, file_name, path='./'):
         """Save the structure of the network (neurons for each layer), weights and biases of the neural network in a .pkl file.
@@ -365,14 +367,17 @@ class Ann:
         if file_name[-4:] != '.pkl':
             file_name += '.pkl'
         total_name = path + file_name
-        parameters = [self.num_inputs, self.num_hidden, self.num_outputs, self.biases, self.weights]
+        parameters = [self.num_inputs, self.num_hidden, self.num_outputs, self.biases, self.weights, self.activation_func, self.loss_func]
         pickle.dump(parameters, open(total_name, 'wb'))
         return 'Save completed successfully'
     
+    ###################################################################################################################################
+    
+    #Loading methods
     
     @classmethod
     def load_parameters(cls, file_name):
-        """ Load from a file the weights, the biases and the number of neurons for each layer.
+        """ Load from a file the weights, the biases, the number of neurons for each layer, the activation and the loss function.
         
         Parameters
         ----------
@@ -391,8 +396,13 @@ class Ann:
             Number of neurons in the hidden layers of the neural network saved previously.
         num_outputs : int
             Number of neurons in the output layer of the neural network saved previously.
-
+        activation_function : func
+            Activation function of the neural network
+        loss_func : func
+            Loss function of the neural network
+            
         """
+        
         if file_name[-4:] != '.pkl':
             file_name += '.pkl'
         parameters = pickle.load(open(file_name, 'rb'))
@@ -401,12 +411,14 @@ class Ann:
         num_outputs = parameters[2]
         biases = parameters[3]
         weights = parameters[4]
-        return biases, weights, num_inputs, num_hidd, num_outputs
+        activation_function = parameters[5]
+        loss_function = parameters[6]
+        return biases, weights, num_inputs, num_hidd, num_outputs, activation_function, loss_function
     
     
     @classmethod
     def load_and_set_network(cls, file_name):
-        """Create a neural network with weights, biases and number of neuron for each layer stored in "file_name"
+        """Create a neural network with weights, biases, number of neuron for each layer, activation and loss functions stored in "file_name"
         
         Parameters
         ----------
@@ -416,7 +428,7 @@ class Ann:
         Returns
         -------
         network_loaded : Ann
-            Neural network with weights, biases and number of neuron for each layer stored in the file "file_name"
+            Neural network with weights, biases, number of neuron for each layer, activation and loss functions stored in the file "file_name"
 
         """
         
@@ -428,9 +440,13 @@ class Ann:
         num_outputs = parameters[2]
         biases = parameters[3]
         weights = parameters[4]
+        activation_function = parameters[5]
+        loss_function = parameters[6]
         network_loaded = cls(num_inputs, num_hidd, num_outputs)
         network_loaded.biases = biases
         network_loaded.weights = weights
+        network_loaded.set_activation_function(activation_function)
+        network_loaded.set_loss_function(loss_function)
         return network_loaded
         
         
