@@ -292,7 +292,8 @@ class Ann:
         return float(sum_error / n)
     
     ###########################################################################################    
-    # get methods
+    
+    #Get methods
     
     def get_weights(self):
         """Return a list whose elements are the weight matrices for each couple of layers"""
@@ -308,16 +309,41 @@ class Ann:
         """Return the activation function used in the neural network process of training"""
         return self.activation_func
     
+    
     def get_loss_function(self):
         """Return the loss function used in the neural network process of training"""
         return self.loss_func
     
     ############################################################################################
     
+    #Set methods
+    
     def set_parameters(self, saved_weights, saved_biases):
+        """Set the parameters(weights and biases) of the network"""
         self.weights = saved_weights
         self.biases = saved_biases
+     
         
+    def set_activation_function(self, act_func):
+        """Set the activation function of the network"""    
+        self.activation_func = act_func
+        
+        if act_func == act.sigmoid:
+            self.act_func_deriv = act.deriv_sigmoid
+        elif act_func == act.softmax:
+            self.acti_func_deriv = act.deriv_softmax
+        
+    
+    def set_loss_function(self, loss_func):
+        """"Set the loss function of the network"""
+        self.loss_func = loss_func
+        
+        if loss_func == lf.binary_cross_entropy:
+            self.loss_func_deriv = lf.binary_cross_entropy_deriv
+        elif loss_func == lf.cross_entropy:
+            self.loss_func_deriv = lf.cross_entropy_deriv 
+        
+    ##########################################################################################
     
     def save_parameters(self, file_name, path='./'):
         """Save the structure of the network (neurons for each layer), weights and biases of the neural network in a .pkl file.
