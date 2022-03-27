@@ -208,47 +208,6 @@ def test_biases_structure_after_gradient (inp, hidd, out, learning_rate):
 
 """
 
-###########################################################################################################################
-
-target_values = [0, 1]
-prediction_values = np.arange(0, 1 + 0.001, 0.001)
-dim = 9   # da provare a rendere dim variabile durante il test
-
-@given(target = st.lists(st.sampled_from(target_values), min_size=dim, max_size=dim),
-       prediction = st.lists(st.sampled_from(prediction_values), min_size=dim, max_size=dim))
-def test_range_cross_entropy(target, prediction):
-    "Test that the result of the cross entropy is in the expected interval [0, -dim*log(clip_value)]"
-    minimum = 0
-    maximum = - dim * np.log(lf.clip_value)
-    cross_entropy = lf.cross_entropy(prediction, target)
-    assert cross_entropy >= minimum and cross_entropy <= maximum
-    
-###########################################################################################################################
-
-@given(target = st.lists(st.sampled_from(target_values), min_size=dim, max_size=dim),
-       prediction = st.lists(st.sampled_from(prediction_values), min_size=dim, max_size=dim))
-def test_nan_values_cross_entropy_deriv(target, prediction):
-    "Test that the derivative of the cross entropy does not produce nan values"
-    prediction = np.array(prediction)
-    target = np.array(target)
-    result = lf.cross_entropy_deriv(prediction, target)
-    for i in range(len(result)):
-        assert not np.isnan(result[i])
-        
-###########################################################################################################################
-
-@given(target = st.lists(st.sampled_from(target_values), min_size=dim, max_size=dim),
-       prediction = st.lists(st.sampled_from(prediction_values), min_size=dim, max_size=dim))
-def test_inf_values_cross_entropy_deriv(target, prediction):
-    "Test that the derivative of the cross entropy does not produce inf values"
-    prediction = np.array(prediction)
-    target = np.array(target)
-    result = lf.cross_entropy_deriv(prediction, target)
-    for i in range(len(result)):
-        assert result[i] > -np.inf and result[i] < np.inf
-
-
-
 
 ############################################################################################################################
 
@@ -313,3 +272,64 @@ def test_range_softmax_function_derivative(data):
     inputs = np.array(inputs)
     jacobian = act.deriv_softmax(inputs)
     assert np.all(jacobian >= -1) and np.all(jacobian <= 1)
+    
+    
+##################################################################################################################################
+
+#Test the loss functions
+
+target_values = [0, 1]
+prediction_values = np.arange(0, 1 + 0.001, 0.001)
+
+@given(data())
+def test_range_cross_entropy(data):
+    "Test that the result of the cross entropy is in the expected interval [0, -dim*log(clip_value)]"
+    dim = data.draw(st.integers(min_value=2, max_value=20))
+    target = data.draw(st.lists(st.sampled_from(target_values), min_size=dim, max_size=dim))
+    prediction = data.draw(st.lists(st.sampled_from(prediction_values), min_size=dim, max_size=dim))
+    minimum = 0
+    maximum = - dim * np.log(lf.clip_value)
+    cross_entropy = lf.cross_entropy(prediction, target)
+    assert cross_entropy >= minimum and cross_entropy <= maximum
+
+
+@given(data())
+def test_nan_values_cross_entropy_deriv(data):
+    "Test that the derivative of the cross entropy does not produce nan values"
+    dim = data.draw(st.integers(min_value=2, max_value=20))
+    target = data.draw(st.lists(st.sampled_from(target_values), min_size=dim, max_size=dim))
+    prediction = data.draw(st.lists(st.sampled_from(prediction_values), min_size=dim, max_size=dim))
+    prediction = np.array(prediction)
+    target = np.array(target)
+    result = lf.cross_entropy_deriv(prediction, target)
+    assert not np.any(np.isnan(result))
+
+
+@given(data())
+def test_inf_values_cross_entropy_deriv(data):
+    "Test that the derivative of the cross entropy does not produce inf values"
+    dim = data.draw(st.integers(min_value=2, max_value=20))
+    target = data.draw(st.lists(st.sampled_from(target_values), min_size=dim, max_size=dim))
+    prediction = data.draw(st.lists(st.sampled_from(prediction_values), min_size=dim, max_size=dim))
+    prediction = np.array(prediction)
+    target = np.array(target)
+    result = lf.cross_entropy_deriv(prediction, target)
+    assert np.all(result > -np.inf) and np.all(result < np.inf)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
