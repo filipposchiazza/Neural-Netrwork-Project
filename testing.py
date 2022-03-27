@@ -271,3 +271,15 @@ def test_normalization_softmax_function(x, y, z):
     assert np.abs(summation - 1) < 1e-15
 
 ############################################################################################################################
+
+
+#Test the activation functions
+
+@given(x=st.floats(allow_nan=False))
+def test_range_sigmoid(x):
+    "Test that the output of the sigmoid function is in the range [0, 1]"
+    result = act.sigmoid(x)
+    assert result >= 0 and result <= 1
+
+
+ 
