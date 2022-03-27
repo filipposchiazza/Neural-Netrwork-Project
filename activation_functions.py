@@ -6,7 +6,7 @@ import numpy as np
 
 def sigmoid(x):
     "Definition of the sigmoid function"
-    x = max(x, -709)
+    x = np.where(x > -709, x, -709)
     return 1 / (1 + np.exp(-x))
 
 
