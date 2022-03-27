@@ -247,29 +247,8 @@ def test_inf_values_cross_entropy_deriv(target, prediction):
     for i in range(len(result)):
         assert result[i] > -np.inf and result[i] < np.inf
 
-############################################################################################################################
 
-@given(x = st.floats(allow_infinity=False, allow_nan=False),
-       y = st.floats(allow_infinity=False, allow_nan=False),
-       z = st.floats(allow_infinity=False, allow_nan=False))
-def test_range_softmax_function(x, y, z):
-    "Test the range of the softmax function"
-    inputs = np.array([x, y, z])
-    result = act.softmax(inputs)
-    for i in range(len(result)):
-        assert result[i] >= 0 and result[i] <= 1
 
-############################################################################################################################
-
-@given(x = st.floats(allow_infinity=False, allow_nan=False),
-       y = st.floats(allow_infinity=False, allow_nan=False),
-       z = st.floats(allow_infinity=False, allow_nan=False))
-def test_normalization_softmax_function(x, y, z):
-    "Test that the sum of the elements of the softmax output is equal to one (condition to represent a probability)"
-    inputs = np.array([x, y, z])
-    result = act.softmax(inputs)
-    summation = np.sum(result)
-    assert np.abs(summation - 1) < 1e-15
 
 ############################################################################################################################
 
@@ -282,7 +261,7 @@ def test_range_sigmoid(data):
     lenght = data.draw(st.integers(min_value=1, max_value=100))
     inputs = []
     for i in range(lenght):
-        inputs.append(data.draw(st.floats(allow_nan=False, allow_infinity=False)))
+        inputs.append(data.draw(st.floats(allow_nan=False, allow_infinity=True)))
     inputs = np.array(inputs)
     result = act.sigmoid(inputs)
     assert np.all(result >= 0)  and np.all(result <= 1)
@@ -294,9 +273,33 @@ def test_range_derivative_sigmoid(data):
     lenght = data.draw(st.integers(min_value=1, max_value=100))
     inputs = []
     for i in range(lenght):
-        inputs.append(data.draw(st.floats(allow_nan=False, allow_infinity=False)))
+        inputs.append(data.draw(st.floats(allow_nan=False, allow_infinity=True)))
     inputs = np.array(inputs)
     jacobian = act.deriv_sigmoid(inputs)
     assert np.all(jacobian >= 0)  and np.all(jacobian <= 0.25)
     
+
+@given(data())
+def test_range_softmax_function(data):
+    "Test the range of the softmax function"
+    lenght = data.draw(st.integers(min_value=1, max_value=100))
+    inputs = []
+    for i in range(lenght):
+        inputs.append(data.draw(st.floats(max_value=1e100, allow_nan=False, allow_infinity=False)))
+    inputs = np.array(inputs)
+    result = act.softmax(inputs)
+    assert np.all(result >=0) and np.all(result <= 1)
+
+@given(data())
+def test_normalization_softmax_function(data):
+    "Test that the sum of the elements of the softmax output is equal to one (condition to represent a probability)"
+    lenght = data.draw(st.integers(min_value=1, max_value=100))
+    inputs = []
+    for i in range(lenght):
+        inputs.append(data.draw(st.floats(max_value=1e100, allow_nan=False, allow_infinity=False)))
+    inputs = np.array(inputs)
+    result = act.softmax(inputs)
+    summation = np.sum(result)
+    assert np.abs(summation - 1) < 1e-15
+ 
     
