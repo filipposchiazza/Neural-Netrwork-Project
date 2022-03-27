@@ -252,7 +252,6 @@ def test_inf_values_cross_entropy_deriv(target, prediction):
 
 ############################################################################################################################
 
-
 #Test the activation functions
 
 @given(data())
@@ -288,7 +287,8 @@ def test_range_softmax_function(data):
         inputs.append(data.draw(st.floats(max_value=1e100, allow_nan=False, allow_infinity=False)))
     inputs = np.array(inputs)
     result = act.softmax(inputs)
-    assert np.all(result >=0) and np.all(result <= 1)
+    assert np.all(result >= 0) and np.all(result <= 1)
+
 
 @given(data())
 def test_normalization_softmax_function(data):
@@ -302,4 +302,14 @@ def test_normalization_softmax_function(data):
     summation = np.sum(result)
     assert np.abs(summation - 1) < 1e-15
  
-    
+
+@given(data())
+def test_range_softmax_function_derivative(data): 
+    "Test the range of the elements of the softmax function jacobian ([-1, 1])"
+    lenght = data.draw(st.integers(min_value=1, max_value=100))
+    inputs = []
+    for i in range(lenght):
+        inputs.append(data.draw(st.floats(max_value=1e100, allow_nan=False, allow_infinity=False)))
+    inputs = np.array(inputs)
+    jacobian = act.deriv_softmax(inputs)
+    assert np.all(jacobian >= -1) and np.all(jacobian <= 1)
