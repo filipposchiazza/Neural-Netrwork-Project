@@ -261,6 +261,37 @@ class Ann:
         """
         prediction = self._forward_prop(inputs, self.activation_func)
         return prediction
+        
+    
+    def evaluate_classification(self, inputs, targets):
+        
+        if np.size(targets[0]) == 1:
+            predictions = self.predict(inputs)
+            predictions = np.reshape(predictions, (len(predictions), ))
+            targets = np.reshape(targets, (len(targets),))
+            predictions = np.where(predictions > 0.5, 1, 0)
+            correct_predictions = predictions == targets 
+            
+        else:
+            predictions = np.zeros((len(inputs), np.size(targets[0])))
+            for i in range(len(predictions)):
+                predictions[i] = self.predict(inputs[i])
+        
+            for i in range(len(predictions)):
+                support = np.max(predictions[i])
+                predictions[i] = np.where(predictions[i] == support, 1, 0)
+        
+            correct_predictions = np.all(predictions==targets, axis=1)
+            
+            
+        num_correct_prediction = np.sum(correct_predictions)
+        percentage = num_correct_prediction / len(predictions) * 100
+        
+        print("Correct classification on the test dataser: {}/{}".format(num_correct_prediction, len(predictions)))
+        print ("Percentage of correct classification on the test dataset: {}%".format(percentage))
+        
+        return predictions
+    
     
     
     def evaluate(self, inputs, targets):
@@ -454,11 +485,6 @@ class Ann:
     
 
     
-        
-        
-        
-
-
 
     
         
