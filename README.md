@@ -8,9 +8,9 @@
 * [Source](#Source)
 
 ## Introduction
-Introduction is like a summary. It shouldn't be too long as we don't want to read an essay on a project. We should describe in an interesting manner what's the project aim, and what problems does a given application solve. Two or three sentences are enough in case of a small project.
-
-If it's a training project, mention your incentive. Why did you want to create it? To learn a particular technology?
+The aim of this project is to program an Artificial Neural Network from scratch, by using only Numpy. For this reason it is taught as a training project, in order to deeply understand how an Artificial Neural Network works from both a mathematical and computational point of view.\
+### Structure of the repository
+The principal component of this repository is the ann.py file, where the Ann class is implemented. It is supported by activation_functions.py and loss_functions.py, where the possible activation functions and loss functions are respectively implemented. In addiction, in the file testing.py there is the testing routine based on the library Hypothesis. Finally, there are three scripts (binary_classification.py, classification_Iris.py and classification_Digits.py) that are examples on how to perform binary classification and multiple-class classification. 
 
 ## Technologies
 Project is created with: 
@@ -44,10 +44,12 @@ Train the neural network with the test dataset and targets
 ```
 $ my_neural_network.train(data_train, targets_train, epochs=30, learning_rate=0.1, activation_function=act.softmax, loss_func=lf.cross_entropy)
 ```
+![Training output](./images/Train.png)\
 Evaluate the performance of the neural network in the classification
 ```
 $ my_neural_network.evaluate_classification(data_test, targets_test)
 ```
+![Evaluate classification output](./images/Evaluate_classification.png)\
 At this point it is possible to save the parameters of the neural network (weights, biases, number of neurons for each layers, the activation and the loss function) in pkl format
 ```
 $ my_neural_network.save_parameters(file_name="parameters.pkl")
