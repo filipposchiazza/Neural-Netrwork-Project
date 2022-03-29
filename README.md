@@ -22,6 +22,10 @@ Project is created with:
 
 ## How to install
 
+```
+$ git clone 
+```
+
 ## How to use
 How to run a project? Does a project has minimum hardware requirements?
 
