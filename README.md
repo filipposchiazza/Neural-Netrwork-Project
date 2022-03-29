@@ -25,6 +25,10 @@ To install the repository run:
 ```
 $ git clone https://github.com/filipposchiazza/Neural-Network-Project.git
 ```
+It is also possible to install all or some of the required packages, by running:
+```
+$ pip install requirements.txt
+```
 
 ## How to use
 First of all, import the library:
