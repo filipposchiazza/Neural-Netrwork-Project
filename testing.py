@@ -201,13 +201,40 @@ def test_biases_structure_after_gradient (inp, hidd, out, learning_rate):
 ##########################################################################################################################
 
 # Test the predict method
-
+"""
 ########################################################################################################################## 
 
 # Test the evaluate classification method
 
+target_values = [0, 1]
+
+@given(data = data(),
+       inp = st.integers(min_value=1, max_value=100),
+       hidd = st.lists(st.sampled_from(num_neuron), min_size=1, max_size=10),
+       out = st.integers(min_value=1, max_value=50))
+def test_number_correct_prediction_is_in_meaningful_range(data, inp, hidd, out):
+    "Test that the number of correct predictions in in the range between 0 and the total number of predictions"
+    ann_test = ann.Ann(inp, hidd, out)
+    if out == 1:
+        ann_test.set_activation_function(act.sigmoid)
+        ann_test.set_loss_function(lf.binary_cross_entropy)
+    else:
+        ann_test.set_activation_function(act.softmax)
+        ann_test.set_loss_function(lf.cross_entropy)
+        
+    size_dataset = data.draw(st.integers(min_value=1, max_value=1e2))
+    targets = np.zeros((size_dataset, out))
+    for i in range(len(targets)):
+        targets[i] = data.draw(st.lists(st.sampled_from(target_values), min_size=out, max_size=out))
+    inputs = np.random.standard_normal((size_dataset, inp))
+    inputs = np.array(inputs)
+    targets = np.array(targets)
+    a, num_correct_classification, c = ann_test.evaluate_classification(inputs, targets) 
+    assert num_correct_classification >= 0 and num_correct_classification <= len(targets)
+
+
 ##########################################################################################################################
-"""
+
 # Test save parameters method
 @given(inp = st.integers(min_value=1, max_value=1e5),
        hidd = st.lists(st.sampled_from(num_neuron), min_size=1, max_size=10),
