@@ -5,7 +5,6 @@ import pickle
 import activation_functions as act
 import loss_functions as lf
 
-
 class Ann:
     
     def __init__(self, num_inputs, num_hidden, num_outputs):
@@ -236,7 +235,7 @@ class Ann:
                 # evaluate the error for each input
                 sum_error += loss_func(output, target)
             
-            print("Epoch {}/{}-Error: {}".format(i+1, epochs, sum_error / n))
+            print("Epoch {}/{}-Error: {}".format(i+1, epochs, float(sum_error / n)))
         
         return sum_error / n
                 
@@ -264,6 +263,26 @@ class Ann:
         
     
     def evaluate_classification(self, inputs, targets):
+        """Evaluate the percentage of correct classification on the test dataset.
+        
+
+        Parameters
+        ----------
+        inputs : array_like
+            Test dataset.
+        targets : array_like
+            True labels of the test dataset.
+
+        Returns
+        -------
+        predictions : array_like
+            Output of the neural network for the test dataset.
+        
+        Example
+        -------
+        >>Ann.evaluate_classification(dataset_test, target_test)
+
+        """
         
         if np.size(targets[0]) == 1:
             predictions = self.predict(inputs)
@@ -287,42 +306,14 @@ class Ann:
         num_correct_prediction = np.sum(correct_predictions)
         percentage = num_correct_prediction / len(predictions) * 100
         
-        print("Correct classification on the test dataser: {}/{}".format(num_correct_prediction, len(predictions)))
-        print ("Percentage of correct classification on the test dataset: {}%".format(percentage))
+        print("Correct classification on the test dataset: {}/{}".format(num_correct_prediction, len(predictions)))
+        print ("Percentage of correct classification on the test dataset: {:.2f}%".format(percentage))
         
-        return predictions
+        return predictions, num_correct_prediction, percentage
     
     
     
-    def evaluate(self, inputs, targets):
-        """ Evaluation of the mean error for a test dataset (never seen before by the neural network)
-        
-        Parameters
-        ----------
-        inputs : array_like
-            Data given to the neural network in order to have prediction.
-        targets : array_like
-            True labels of the data.
-        
-        Returns
-        -------
-        float
-            Mean error between the targets and the outputs of the neural network evaluated with the loss function.
-            
-        Example
-        -------
-        >>> Ann.evaluate(data, labels)
-        
-        """
-        sum_error = 0
-        n = len(inputs)
-        for i in range(len(inputs)):
-            prediction = self.predict(inputs[i])
-            target = targets[i]
-            sum_error += self.loss_func(prediction, target)
-        return float(sum_error / n)
-    
-    ###########################################################################################    
+###############################################################################################################################    
     
     #Get methods
     
@@ -379,12 +370,14 @@ class Ann:
     #Saving method
     
     def save_parameters(self, file_name, path='./'):
-        """Save the structure of the network (neurons for each layer), weights and biases of the neural network in a .pkl file.
+        """Save the structure of the network (neurons for each layer), weights and biases, activation function
+        and loss function of the neural network in a .pkl file.
         
         Parameters
         ----------
         file_name : string
-            Name of the file where weights and biases will be stored. The file will be a .pkl and it is possible to add or not the extension.
+            Name of the file where the neural network parameters will be stored. 
+            The file will be a .pkl and it is possible to add or not the extension.
         path : string, optional
             Directory where the file will be saved. If the file already exists, it will be overwritten. The default is './'.
 
@@ -454,7 +447,8 @@ class Ann:
         Parameters
         ----------
         file_name : string
-            File source where weights, biases and number of neurons for each layer are stored (look at 'save_parameters' method).
+            File source where weights, biases, number of neurons for each layer,activation and loss function
+            are stored (look at 'save_parameters' method).
 
         Returns
         -------

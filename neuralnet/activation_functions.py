@@ -1,4 +1,4 @@
-"Different type of activation function and their derivatives to be used in the Artificial Neural Network"
+#Different type of activation function and their derivatives to be used in the Artificial Neural Network
 
 import numpy as np
 
@@ -12,6 +12,7 @@ def sigmoid(x):
 
 def deriv_sigmoid(x):
     "Definition of the jacobian (trivial) of the sigmoid function"
+    x = np.array(x)
     lenght = len(x)
     jacobian = np.zeros((lenght, lenght))
     for i in range(lenght):

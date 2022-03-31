@@ -14,7 +14,7 @@ import loss_functions as lf
 
 max_num_neurons = 10
 num_neuron = [i for i in range(1, max_num_neurons + 1)]
-"""
+
 ##################################################################################################################################
 
 #Test the costruction of the neural network (the function __init__)
@@ -111,9 +111,9 @@ def test_num_biases_derivatives(inp, hidd, out):
        out = st.integers(min_value=1, max_value=50))
 def test_forward_prop(inp, hidd, out):
     # Test that the dimension of the forward propagation result is the same as the number of output layers of the neural network
-    data = np.random.randn(inp)
+    dataset = np.random.randn(inp)
     network = ann.Ann(inp, hidd, out)
-    assert network.num_outputs == network._forward_prop(data, act.sigmoid).size
+    assert network.num_outputs == network._forward_prop(dataset, act.sigmoid).size
     
 ########################################################################################################################## 
 
@@ -196,12 +196,13 @@ def test_biases_structure_after_gradient (inp, hidd, out, learning_rate):
 
 ##########################################################################################################################
 
-# Test the train method
+# Test the train method  -> not necessary because it is the collection of methods already tested.
 
 ##########################################################################################################################
 
-# Test the predict method
-"""
+# Test the predict method  -> not necessary because it simply apply the forward propagation to an input vector and the
+# forward propagation is already tested.
+
 ########################################################################################################################## 
 
 # Test the evaluate classification method
@@ -314,7 +315,7 @@ def test_bilding_network_from_saving_parameters(inp, hidd, out, file_name):
 ############################################################################################################################
 
 #Test the activation functions
-"""
+
 @given(data())
 def test_range_sigmoid(data):
     "Test that the output of the sigmoid function is in the range [0, 1]"
@@ -439,5 +440,4 @@ def test_inf_values_cross_entropy_deriv(data):
     result = lf.cross_entropy_deriv(prediction, target)
     assert np.all(result > -np.inf) and np.all(result < np.inf)
 
-"""
 
