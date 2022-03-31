@@ -3,7 +3,6 @@ from setuptools import setup, find_packages
 install_requires = [
     "numpy",
     "sklearn",
-    "pickle"
     ]
 
 tests_require = [
