@@ -9,7 +9,7 @@ from sklearn.preprocessing import MinMaxScaler
 
 #HANDWRITTEN DIGITS DATASET
 
-#Load the dataset
+#Load the handwritten digits dataset
 digits = load_digits()
 data = digits.data
 targets = digits.target

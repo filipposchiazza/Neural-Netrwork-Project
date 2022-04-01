@@ -167,6 +167,7 @@ class Ann:
 
         """
         for i in range(len(self.weights)):
+            # Update weights and biases for each level of the neural network
             self.weights[i] -= learning_rate*self.weights_deriv[i]
             self.biases[i] -= learning_rate*self.biases_deriv[i]
         return self.weights, self.biases
@@ -187,13 +188,9 @@ class Ann:
             Learning rate used to update weights and biases with the gradient descendent method.
         activation_function : function
             Activation function used by each neuron to produce its output.
-        activation_derivative : function
-            Derivative of the activation function.
         loss_func : function
             Function used to evaluete the difference between the output produced by the network and the target one.
             The goal is to minimize this function with respect the weights and the biases.
-        deriv_loss_fun : function
-            Derivative of the loss function used during the backpropagation phase.
 
         Returns
         -------
@@ -205,7 +202,7 @@ class Ann:
         >>> import import activation_functions as act
         >>> import loss_functions as lf
         >>> ann.Ann(10, [5, 3], 2)
-        >>> Ann.train(data, labels, 1000, 0.1, act.sigmoid, act.deriv_sigmoid, lf.mse, lf.mse_deriv)
+        >>> Ann.train(data, labels, 1000, 0.1, act.sigmoid, lf.binary_cross_entropy)
 
         """
         
@@ -235,7 +232,7 @@ class Ann:
                 # evaluate the error for each input
                 sum_error += loss_func(output, target)
             
-            print("Epoch {}/{}-Error: {}".format(i+1, epochs, float(sum_error / n)))
+            print("Epoch {}/{} - Error: {}".format(i+1, epochs, float(sum_error / n)))
         
         return sum_error / n
                 
@@ -265,7 +262,6 @@ class Ann:
     def evaluate_classification(self, inputs, targets):
         """Evaluate the percentage of correct classification on the test dataset.
         
-
         Parameters
         ----------
         inputs : array_like

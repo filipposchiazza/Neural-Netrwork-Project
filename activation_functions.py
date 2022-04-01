@@ -6,14 +6,14 @@ import numpy as np
 
 def sigmoid(x):
     "Definition of the sigmoid function"
-    x = np.where(x > -709, x, -709)
+    x = np.where(x > -709, x, -709)    # Avoid problem of inf value in np.exp(x)
     return 1 / (1 + np.exp(-x))
 
 
 def deriv_sigmoid(x):
     "Definition of the jacobian (trivial) of the sigmoid function"
     x = np.array(x)
-    lenght = len(x)
+    lenght = np.size(x)
     jacobian = np.zeros((lenght, lenght))
     for i in range(lenght):
         jacobian[i][i] = sigmoid(x[i]) * (1 - sigmoid(x[i]))
@@ -30,7 +30,7 @@ def softmax(x):
 
 def deriv_softmax(x):
     "Definition of the softmax function jacobian"
-    lenght = len(x)
+    lenght = np.size(x)
     a = softmax(x)
     jacobian = np.zeros((lenght, lenght))
     for i in range(lenght):
@@ -42,7 +42,7 @@ def deriv_softmax(x):
     return jacobian
 
 ##############################################################################
-
+"""
 def relu(x):
     "Definition of the Rectified Linear Unit function"
     return x * (x>0)
@@ -74,16 +74,4 @@ def deriv_elu(x, alpha=100):
     return jacobian
 
 ##############################################################################
-    
-def tanh(x):
-    "Definition of the hyperbolic function tanh"
-    num = 1 - np.exp(-2 * x)
-    den = 1 + np.exp(-2 * x)
-    return num/den
-
-
-def deriv_tanh(x):
-    "Definition of the derivative of the hyperbolic function tanh"
-    return 1 - tanh(x)**2
-
-##############################################################################
+"""

@@ -23,7 +23,7 @@ num_neuron = [i for i in range(1, max_num_neurons + 1)]
        hidd = st.lists(st.sampled_from(num_neuron), min_size=0, max_size=10),
        out = st.integers(min_value=1, max_value=50))
 def test_num_layers(inp, hidd, out):
-    # Test if the number of layers is the correct one, according to the inputs given to build the ann
+    "Test if the number of layers is the correct one, according to the inputs given to build the ann"
     network = ann.Ann(inp, hidd, out)
     assert network.layers.size == len([network.num_inputs]) + network.num_hidden.size + len([network.num_outputs])
  
@@ -32,7 +32,7 @@ def test_num_layers(inp, hidd, out):
        hidd = st.lists(st.sampled_from(num_neuron), min_size=0, max_size=10),
        out = st.integers(min_value=1, max_value=50))   
 def test_num_weights(inp, hidd, out):
-    # Test if the total number of weights of the neural network is the correct one, according to the inputs given to build it
+    "Test if the total number of weights of the neural network is the correct one, according to the inputs given to build it"
     network = ann.Ann(inp, hidd, out)
     counter_first = 0
     for i in range(len(network.layers)-1):
@@ -48,7 +48,7 @@ def test_num_weights(inp, hidd, out):
        hidd = st.lists(st.sampled_from(num_neuron), min_size=0, max_size=10),
        out = st.integers(min_value=1, max_value=50)) 
 def test_num_biases(inp, hidd, out):
-    # Test if the total number of biases is equal to (total number of neurons - number of neurons in the input layer)
+    "Test if the total number of biases is equal to (total number of neurons - number of neurons in the input layer)"
     network = ann.Ann(inp, hidd, out)
     counter_first = 0
     for b in network.biases:
@@ -63,7 +63,7 @@ def test_num_biases(inp, hidd, out):
        hidd = st.lists(st.sampled_from(num_neuron), min_size=0, max_size=10),
        out = st.integers(min_value=1, max_value=50))
 def test_num_linear_comb(inp, hidd, out):
-    # Test if the total number of linear combinations is equal to (total number of neurons - number of neurons in the input layer)
+    "Test if the total number of linear combinations is equal to (total number of neurons - number of neurons in the input layer)"
     network = ann.Ann(inp, hidd, out)
     counter_first = 0
     for lin in network.linear_comb:
@@ -77,7 +77,7 @@ def test_num_linear_comb(inp, hidd, out):
        hidd = st.lists(st.sampled_from(num_neuron), min_size=0, max_size=10),
        out = st.integers(min_value=1, max_value=50))   
 def test_num_activations(inp, hidd, out):
-    # Test if the numbers of activations stored for each layer is the correct one (corresponding to the number of neurons)
+    "Test if the numbers of activations stored for each layer is the correct one (corresponding to the number of neurons)"
     network = ann.Ann(inp, hidd, out)
     for i in range(len(network.layers)):
         assert len(network.activations[i]) == network.layers[i] 
@@ -87,7 +87,7 @@ def test_num_activations(inp, hidd, out):
        hidd = st.lists(st.sampled_from(num_neuron), min_size=0, max_size=10),
        out = st.integers(min_value=1, max_value=50)) 
 def test_num_weights_derivatives(inp, hidd, out):
-    # Test if the number of weights'derivatives stored is the same of the number of weights (as it should be)
+    "Test if the number of weights'derivatives stored is the same of the number of weights (as it should be)"
     network = ann.Ann(inp, hidd, out)
     for i in range(len(network.weights)):
         assert network.weights[i].size == network.weights_deriv[i].size
@@ -97,7 +97,7 @@ def test_num_weights_derivatives(inp, hidd, out):
        hidd = st.lists(st.sampled_from(num_neuron), min_size=0, max_size=10),
        out = st.integers(min_value=1, max_value=50)) 
 def test_num_biases_derivatives(inp, hidd, out):
-    # Test if the number of biases'derivatives stored is the same of the number of weights (as it should be)
+    "Test if the number of biases'derivatives stored is the same of the number of weights (as it should be)"
     network = ann.Ann(inp, hidd, out)
     for i in range(len(network.biases)):
         assert network.biases[i].size == network.biases_deriv[i].size
@@ -110,7 +110,7 @@ def test_num_biases_derivatives(inp, hidd, out):
        hidd = st.lists(st.sampled_from(num_neuron), min_size=0, max_size=10),
        out = st.integers(min_value=1, max_value=50))
 def test_forward_prop(inp, hidd, out):
-    # Test that the dimension of the forward propagation result is the same as the number of output layers of the neural network
+    "Test that the dimension of the forward propagation result is the same as the number of output layers of the neural network"
     dataset = np.random.randn(inp)
     network = ann.Ann(inp, hidd, out)
     assert network.num_outputs == network._forward_prop(dataset, act.sigmoid).size
@@ -123,13 +123,11 @@ def test_forward_prop(inp, hidd, out):
        hidd = st.lists(st.sampled_from(num_neuron), min_size=0, max_size=10),
        out = st.integers(min_value=1, max_value=50))
 def test_weights_deriv_after_backprop(inp, hidd, out):
-    # Test that, after backpropagation, the dimensionalities of the weights'derivatives is still the same as the ones of weights 
+    "Test that, after backpropagation, the dimensionalities of the weights'derivatives is still the same as the ones of weights"
     network = ann.Ann(inp, hidd, out)
     error = np.random.uniform(-100, 100, out)
     network.activation_func = act.sigmoid
     network._backward_prop(error, act.deriv_sigmoid)
-    
-    
     for i in range(len(network.weights)):
         for j in range(len(network.weights[i])):
             assert network.weights_deriv[i][j].size == network.weights[i][j].size
@@ -138,12 +136,11 @@ def test_weights_deriv_after_backprop(inp, hidd, out):
        hidd = st.lists(st.sampled_from(num_neuron), min_size=0, max_size=10),
        out = st.integers(min_value=1, max_value=50))
 def test_biases_deriv_after_backprop(inp, hidd, out):
-    # Test that, after backpropagation, the dimensionalities of the biases'derivatives is still the same as the ones of biases
+    "Test that, after backpropagation, the dimensionalities of the biases'derivatives is still the same as the ones of biases"
     network = ann.Ann(inp, hidd, out)
     error = np.random.uniform(-100, 100, out)
     network.activation_func = act.sigmoid
     network._backward_prop(error, act.deriv_sigmoid)
-    
     for i in range(len(network.biases)):
         assert network.biases_deriv[i].size == network.biases[i].size    
 
@@ -157,7 +154,7 @@ def test_biases_deriv_after_backprop(inp, hidd, out):
        out = st.integers(min_value=1, max_value=50),
        learning_rate = st.floats(min_value=0.0001, max_value=10, allow_nan=False))
 def test_weights_structure_after_gradient (inp, hidd, out, learning_rate):
-    # Test that the dimensionalities of the weights is still the same after the gradient descendent
+    "Test that the dimensionalities of the weights is still the same after the gradient descendent"
     network = ann.Ann(inp, hidd, out)
     error = np.random.uniform(-100, 100, out)
     network.activation_func = act.sigmoid
@@ -179,7 +176,7 @@ def test_weights_structure_after_gradient (inp, hidd, out, learning_rate):
        out = st.integers(min_value=1, max_value=50),
        learning_rate = st.floats(min_value=0.0001, max_value=10, allow_nan=False))
 def test_biases_structure_after_gradient (inp, hidd, out, learning_rate):
-    # Test if the dimensionalities of the biases is still the same after the gradient descendent
+    "Test if the dimensionalities of the biases is still the same after the gradient descendent"
     network = ann.Ann(inp, hidd, out)
     error = np.random.uniform(-100, 100, out)
     network.activation_func = act.sigmoid

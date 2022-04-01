@@ -9,7 +9,7 @@ from sklearn.preprocessing import MinMaxScaler
 
 # IRIS DATASET
 
-#Load the dataset
+#Load the Iris dataset
 iris = load_iris()
 data = iris.data
 targets = iris.target
@@ -41,7 +41,6 @@ data = scaling.fit_transform(data)
 #Split the dataset in 70% training and 30% test
 data_train, data_test, targets_train, targets_test = train_test_split(data, targets_rev, test_size=0.3)
 
- 
 #Create the neural network       
 my_ann = ann.Ann(4, [5], 3)
 

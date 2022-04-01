@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 
 
-#Load the dataset
+#Load the dataset on breast cancer
 breast_cancer = load_breast_cancer()
 data = breast_cancer.data
 targets = breast_cancer.target
