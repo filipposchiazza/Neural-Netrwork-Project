@@ -1,11 +1,20 @@
 # Artificial Neural Network from scratch
 The aim of this project is to program an Artificial Neural Network from scratch, based only on the Numpy library. For this reason it is taught as a training project, in order to deeply understand how an Artificial Neural Network works from both a mathematical and computational point of view.
+![scheme ann](./images/schemaAnn.full)\
 
 ## Table of contents
 * [Introduction](#Introduction)
+  * [Structure of the repository](#Structure-of-the-repository)
 * [Technologies](#Technologies)
 * [How to install](#How-to-install)
 * [How to use](#How-to-use)
+  * [Import the modules](#Import-the-modules)
+  * [Data pre-processing](#Data-pre-processing)
+  * [Neural Network building](#Neural-Network-building)
+  * [Neural Network training](#Neural-Network-training)
+  * [Classification evaluation](#Classification-evaluation)
+  * [Saving parameters and loading the network](#Saving-parameters-and-loading-the-network)
+* [Testing](#Testing)
 * [Source](#Source)
 
 ## Introduction
