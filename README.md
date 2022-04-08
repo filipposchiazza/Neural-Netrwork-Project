@@ -1,6 +1,5 @@
 # Artificial Neural Network from scratch
 The aim of this project is to program an Artificial Neural Network from scratch, based only on the Numpy library. For this reason it is taught as a training project, in order to deeply understand how an Artificial Neural Network works from both a mathematical and computational point of view.
-![scheme ann](./images/schemaAnn.full)\
 
 ## Table of contents
 * [Introduction](#Introduction)
@@ -19,6 +18,8 @@ The aim of this project is to program an Artificial Neural Network from scratch,
 
 ## Introduction
 An Artificial Neural Network is inspired by the human brain's neurons structure and it can be used both for classification and regression tasks. It is a supervised learning technique, so this means that a dataset with labels is required. The core of an Artificial Neural Network is represented by the *forward propagation*, where the signal moves from the input towards the output and the *backpropagation*, where the network's weights are updated in order to minimize the so-called *Loss function* (a function that measure how far is the network's prediction from the target). 
+
+![scheme ann](./images/schema.png)
 ### Structure of the repository
 The repository is structured in the following way:
 * **neuralnet/**
