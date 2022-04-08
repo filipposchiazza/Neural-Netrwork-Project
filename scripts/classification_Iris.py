@@ -1,3 +1,6 @@
+import sys
+sys.path.insert(0, '/home/filippo/Scrivania/Universit√ /Magistrale/project_ANN/neuralnet')
+
 import numpy as np
 import ann
 import activation_functions as act

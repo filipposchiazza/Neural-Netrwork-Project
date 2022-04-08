@@ -1,4 +1,7 @@
 "Testing"
+import sys
+sys.path.insert(0, '/home/filippo/Scrivania/Università/Magistrale/project_ANN/neuralnet')
+
 
 import numpy as np
 from hypothesis import given
