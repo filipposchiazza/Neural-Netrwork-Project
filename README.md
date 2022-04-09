@@ -55,7 +55,7 @@ $ git clone https://github.com/filipposchiazza/NeuralNetworkFromScratch.git
 ```
 To install the dependencies move into the repository and run:
 ```
-$ pip install requirements.txt
+$ pip install -r requirements.txt
 ```
 
 ## How to use
@@ -129,7 +129,7 @@ $ pip install pytest
 
 $cd path/to/NeuralNetworkFromScratch
 
-pytest tests/testing.py
+pytest test/testing.py
 ```
 
 ## Source
