@@ -1,6 +1,6 @@
 "Testing"
 import sys
-sys.path.insert(0, '/home/filippo/Scrivania/Università/Magistrale/project_ANN/neuralnet')
+sys.path.insert(0, './neuralnet')
 
 
 import numpy as np
