@@ -129,7 +129,7 @@ $ pip install pytest
 
 $cd path/to/NeuralNetworkFromScratch
 
-pytest test/testing.py
+python3 -m pytest test/testing.py
 ```
 
 ## Source
