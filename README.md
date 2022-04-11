@@ -1,5 +1,5 @@
 # Artificial Neural Network from scratch
-The aim of this project is to program an Artificial Neural Network from scratch, based only on the Numpy library. For this reason it is taught as a training project, in order to deeply understand how a Feed Forward Neural Network works from both a mathematical and computational point of view.
+The aim of this project is to program an Artificial Neural Network from scratch, based only on the Numpy library. For this reason the project is taught as a training project, in order to deeply understand how a Feed Forward Neural Network works from both a mathematical and computational point of view.
 
 ## Table of contents
 * [Introduction](#Introduction)
@@ -23,7 +23,7 @@ An Artificial Neural Network is inspired by the human brain's neurons structure 
 ### Structure of the repository
 The repository is structured in the following way:
 * **neuralnet/**
-  - **ann.py** : implementation of the Ann class. The neural network is built starting from three parameters: int (number of neurons in the input layer), list(each element *i* of the list represent the number of neurons in the *i-th* hidden layer, so this means that the list's lenght corresponds to the number of hidden layers), int (number of output layers)). In the training method the stochastic gradient descendent algorithm is implemented, so there is a weights updating for each input.
+  - **ann.py** : implementation of the Ann class. The neural network is built starting from three parameters: int (number of neurons in the input layer), list (each element *i* of the list represent the number of neurons in the *i-th* hidden layer, so this means that the list's lenght corresponds to the number of hidden layers), int (number of output layers). In the training method the stochastic gradient descendent algorithm is implemented, so there is a weights updating for each input.
   - **activation_functions.py** : implementation of the activation functions and of their derivatives (sigmoid and softmax)
   - **loss_functions.py** : implementation of the loss functions and of their derivatives (binary cross entropy and categorical cross entropy)
 * **test/**
@@ -127,9 +127,9 @@ A Testing routine is implemented, by using the Hypothesis library. It is possibl
 ```
 $ pip install pytest
 
-$cd path/to/NeuralNetworkFromScratch
+$ cd path/to/NeuralNetworkFromScratch
 
-python3 -m pytest test/testing.py
+$ python3 -m pytest test/testing.py
 ```
 
 ## Source
