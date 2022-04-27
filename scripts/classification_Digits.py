@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0, '/home/filippo/Scrivania/Universit√ /Magistrale/project_ANN/neuralnet')
+sys.path.insert(0, '/home/filippo/Scrivania/Universit‡/Magistrale/NeuralNetworkFromScratch/neuralnet')
 
 import numpy as np
 import ann
@@ -50,13 +50,13 @@ data = scaling.fit_transform(data)
 data_train, data_test, targets_train, targets_test = train_test_split(data, targets_rev, test_size=0.3)
 
 #Create the neural network      
-my_ann = ann.Ann(64, [15], 10)
+neural_network = ann.Ann(num_inputs=64, num_hidden=[15], num_outputs=10, activation_function=act.softmax, loss_function=lf.cross_entropy)
 
 #Train the neural network
-my_ann.train(data_train, targets_train, epochs=30, learning_rate=0.1, activation_function=act.softmax, loss_func=lf.cross_entropy)
+neural_network.train(inputs=data_train, targets=targets_train, epochs=30, learning_rate=0.1)
 
 #Evaluate the performances of the neural network on the test dataset
-my_ann.evaluate_classification(data_test, targets_test)
+neural_network.evaluate_classification(inputs=data_test, targets=targets_test)
 
 
 

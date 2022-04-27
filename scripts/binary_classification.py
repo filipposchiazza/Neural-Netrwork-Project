@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0, '/home/filippo/Scrivania/Università/Magistrale/project_ANN/neuralnet')
+sys.path.insert(0, '/home/filippo/Scrivania/Università/Magistrale/NeuralNetworkFromScratch/neuralnet')
 
 import ann 
 import activation_functions as act 
@@ -22,10 +22,10 @@ data = scaling.fit_transform(data)
 data_train, data_test, targets_train, targets_test = train_test_split(data, targets, test_size=0.25)
 
 #Create the neural network
-my_nn = ann.Ann(len(data[0]), [5], 1)
+neural_network = ann.Ann(num_inputs=len(data[0]), num_hidden=[5], num_outputs=1, activation_function=act.sigmoid, loss_function=lf.binary_cross_entropy)
 
 #Train the neural network
-my_nn.train(data_train, targets_train, 20, 0.2, act.sigmoid, lf.binary_cross_entropy)
+neural_network.train(inputs=data_train, targets=targets_train, epochs=20, learning_rate=0.2)
 
 #Evaluate the performances of the neural network on the test dataset
-my_nn.evaluate_classification(data_test, targets_test)
+neural_network.evaluate_classification(inputs=data_test, targets=targets_test)

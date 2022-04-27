@@ -7,7 +7,7 @@ import loss_functions as lf
 
 class Ann:
     
-    def __init__(self, num_inputs, num_hidden, num_outputs, seed=None):
+    def __init__(self, num_inputs, num_hidden, num_outputs, activation_function, loss_function, seed=None):
         
         """Initialize the Artificial Neural Network
         
@@ -20,6 +20,13 @@ class Ann:
             by the dimension of the array
         num_output : int
             The number of outputs of the Neural Network
+        activation_function : function
+            Activation function used by each neuron to produce its output.
+        loss_function : function
+            Function used to evaluete the difference between the output produced by the network and the target one.
+            The goal is to minimize this function with respect the weights and the biases.
+        seed : int
+            Default value = None. Value used to set the seed for the initial random generation of biases and weights
         
         Returns
         -------
@@ -37,6 +44,9 @@ class Ann:
         self.num_hidden = np.array(num_hidden)
         self.num_outputs = num_outputs
         self.layers = np.concatenate(([self.num_inputs], self.num_hidden, [self.num_outputs]))
+        self._set_activation_function(activation_function)
+        self._set_loss_function(loss_function)
+        
         
         # Set the seed for the random generation
         np.random.seed(seed)
@@ -80,7 +90,7 @@ class Ann:
             self.biases_deriv.append(d_b)
         
             
-    def _forward_prop(self, inputs, activation_func):
+    def _forward_prop(self, inputs):
         
         """Perform the forward propagation
         
@@ -88,8 +98,6 @@ class Ann:
         ----------
         inputs : array_like
             Vector of inputs for the Neural Network
-        activation_func : function
-            Activation function used by each neuron to produce its output
         
         Returns
         -------
@@ -107,22 +115,20 @@ class Ann:
             self.linear_comb[i] = z
             
             # Apply the activation function to the linear part
-            activations = activation_func(z)
+            activations = self.activation_func(z)
             
             # Store the activations in object attribute self.activations
             self.activations[i+1] = activations
         return activations
     
     
-    def _backward_prop(self, error, activation_deriv, verbose = False):
+    def _backward_prop(self, error,verbose = False):
         """ Perform the backpropagation algorithm
         
         Parameters
         ----------
         error : array_like
             Derivative of the error function evaluated in each neuron of the output layer.
-        activation_deriv : function
-            Derivative of the activation function given, as an argument, to the forward propagation function.
         verbose : Boolean, optional
             If it is set to True, print all the derivatives of the weights and biases. The default is False.
 
@@ -136,7 +142,7 @@ class Ann:
         
         for i in reversed(range(len(self.weights_deriv))):
             z = self.linear_comb[i]    
-            delta = np.dot(error, activation_deriv(z))
+            delta = np.dot(error, self.act_func_deriv(z))
             delta_reshaped = delta.reshape(delta.shape[0], -1).T          
             current_activation = self.activations[i]
             current_activation_reshaped = current_activation.reshape(current_activation.shape[0], -1)
@@ -176,7 +182,7 @@ class Ann:
         return self.weights, self.biases
     
     
-    def train(self, inputs, targets, epochs, learning_rate, activation_function, loss_func):
+    def train(self, inputs, targets, epochs, learning_rate, verbose=True):
         """ Train method: the neural network update weights and biases, according to the inputs and the targets in order to minimize the loss function
         
         Parameters
@@ -189,11 +195,8 @@ class Ann:
             Number of times the entire set of input data is given to the neural network for the process of training.
         learning_rate : float
             Learning rate used to update weights and biases with the gradient descendent method.
-        activation_function : function
-            Activation function used by each neuron to produce its output.
-        loss_func : function
-            Function used to evaluete the difference between the output produced by the network and the target one.
-            The goal is to minimize this function with respect the weights and the biases.
+        verbose : bool
+            Default value: True. If it is equal to True, the error is printed for each epoch. 
 
         Returns
         -------
@@ -204,14 +207,10 @@ class Ann:
         -------
         >>> import import activation_functions as act
         >>> import loss_functions as lf
-        >>> ann.Ann(num_inputs=10, num_hidden=[5, 3], num_outputs=2)
-        >>> Ann.train(data, labels, 1000, 0.1, act.sigmoid, lf.binary_cross_entropy)
+        >>> ann.Ann(num_inputs=10, num_hidden=[5, 3], num_outputs=2, activation_function=act.sigmoid, loss_function=lf.binary_cross_entropy)
+        >>> Ann.train(inputs=data, targets=labels, epochs=1000, learning_rate=0.1)
 
-        """
-        
-        self.set_activation_function(activation_function)
-        self.set_loss_function(loss_func)
-        
+        """     
         n = len(inputs)
         
         for i in range(epochs):
@@ -221,21 +220,22 @@ class Ann:
             for single_input, target in zip(inputs, targets):
                 
                 # forward propagation
-                output = self._forward_prop(single_input, self.activation_func)
+                output = self._forward_prop(single_input)
                 
                 # calculate the error
                 error = self.loss_func_deriv(output, target)
                 
                 # backpropagation
-                self._backward_prop(error, self.act_func_deriv)
+                self._backward_prop(error)
                 
                 # apply gradient descendent
                 self._gradient_descendent(learning_rate)
                 
                 # evaluate the error for each input
-                sum_error += loss_func(output, target)
+                sum_error += self.loss_func(output, target)
             
-            print("Epoch {}/{} - Error: {}".format(i+1, epochs, float(sum_error / n)))
+            if verbose == True:
+                print("Epoch {}/{} - Error: {}".format(i+1, epochs, float(sum_error / n)))
         
         return sum_error / n
                 
@@ -258,7 +258,7 @@ class Ann:
         >>> Ann.predict(data)
         
         """
-        prediction = self._forward_prop(inputs, self.activation_func)
+        prediction = self._forward_prop(inputs)
         return prediction
         
     
@@ -345,7 +345,7 @@ class Ann:
         self.biases = saved_biases
      
         
-    def set_activation_function(self, act_func):
+    def _set_activation_function(self, act_func):
         """Set the activation function of the network"""    
         self.activation_func = act_func
         
@@ -355,7 +355,7 @@ class Ann:
             self.act_func_deriv = act.deriv_softmax
         
     
-    def set_loss_function(self, loss_func):
+    def _set_loss_function(self, loss_func):
         """"Set the loss function of the network"""
         self.loss_func = loss_func
         
@@ -366,7 +366,7 @@ class Ann:
         
     ##########################################################################################
     
-    #Saving method
+    #Saving method      
     
     def save_parameters(self, file_name, path='./'):
         """Save the structure of the network (neurons for each layer), weights and biases, activation function
