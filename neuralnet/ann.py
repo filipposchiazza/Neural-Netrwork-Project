@@ -470,21 +470,4 @@ class Ann:
         network_loaded.set_loss_function(loss_function)
         return network_loaded
         
-        
-    
-    
-
-    
-
-    
-        
-    
-
-
-
-    
-if __name__ == '__main__':
-    
-    print ("Hello")
-    
-        
+  
