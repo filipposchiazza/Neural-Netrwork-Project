@@ -1,6 +1,6 @@
 "Testing"
 import sys
-sys.path.insert(0, './neuralnet')
+sys.path.insert(0, '/home/filippo/Scrivania/Università/Magistrale/NeuralNetworkFromScratch/neuralnet')
 
 
 import numpy as np
@@ -27,7 +27,7 @@ num_neuron = [i for i in range(1, max_num_neurons + 1)]
        out = st.integers(min_value=1, max_value=50))
 def test_num_layers(inp, hidd, out):
     "Test if the number of layers is the correct one, according to the inputs given to build the ann"
-    network = ann.Ann(inp, hidd, out)
+    network = ann.Ann(num_inputs=inp, num_hidden=hidd, num_outputs=out, activation_function=act.sigmoid, loss_function=lf.binary_cross_entropy)
     assert network.layers.size == len([network.num_inputs]) + network.num_hidden.size + len([network.num_outputs])
  
     
@@ -36,7 +36,7 @@ def test_num_layers(inp, hidd, out):
        out = st.integers(min_value=1, max_value=50))   
 def test_num_weights(inp, hidd, out):
     "Test if the total number of weights of the neural network is the correct one, according to the inputs given to build it"
-    network = ann.Ann(inp, hidd, out)
+    network = ann.Ann(num_inputs=inp, num_hidden=hidd, num_outputs=out, activation_function=act.sigmoid, loss_function=lf.binary_cross_entropy)
     counter_first = 0
     for i in range(len(network.layers)-1):
         counter_first += (network.layers[i]) * (network.layers[i+1])
@@ -52,7 +52,7 @@ def test_num_weights(inp, hidd, out):
        out = st.integers(min_value=1, max_value=50)) 
 def test_num_biases(inp, hidd, out):
     "Test if the total number of biases is equal to (total number of neurons - number of neurons in the input layer)"
-    network = ann.Ann(inp, hidd, out)
+    network = ann.Ann(num_inputs=inp, num_hidden=hidd, num_outputs=out, activation_function=act.sigmoid, loss_function=lf.binary_cross_entropy)
     counter_first = 0
     for b in network.biases:
         counter_first += b.size
@@ -67,7 +67,7 @@ def test_num_biases(inp, hidd, out):
        out = st.integers(min_value=1, max_value=50))
 def test_num_linear_comb(inp, hidd, out):
     "Test if the total number of linear combinations is equal to (total number of neurons - number of neurons in the input layer)"
-    network = ann.Ann(inp, hidd, out)
+    network = ann.Ann(num_inputs=inp, num_hidden=hidd, num_outputs=out, activation_function=act.sigmoid, loss_function=lf.binary_cross_entropy)
     counter_first = 0
     for lin in network.linear_comb:
         counter_first += lin.size
@@ -81,7 +81,7 @@ def test_num_linear_comb(inp, hidd, out):
        out = st.integers(min_value=1, max_value=50))   
 def test_num_activations(inp, hidd, out):
     "Test if the numbers of activations stored for each layer is the correct one (corresponding to the number of neurons)"
-    network = ann.Ann(inp, hidd, out)
+    network = ann.Ann(num_inputs=inp, num_hidden=hidd, num_outputs=out, activation_function=act.sigmoid, loss_function=lf.binary_cross_entropy)
     for i in range(len(network.layers)):
         assert len(network.activations[i]) == network.layers[i] 
 
@@ -91,7 +91,7 @@ def test_num_activations(inp, hidd, out):
        out = st.integers(min_value=1, max_value=50)) 
 def test_num_weights_derivatives(inp, hidd, out):
     "Test if the number of weights'derivatives stored is the same of the number of weights (as it should be)"
-    network = ann.Ann(inp, hidd, out)
+    network = ann.Ann(num_inputs=inp, num_hidden=hidd, num_outputs=out, activation_function=act.sigmoid, loss_function=lf.binary_cross_entropy)
     for i in range(len(network.weights)):
         assert network.weights[i].size == network.weights_deriv[i].size
 
@@ -101,7 +101,7 @@ def test_num_weights_derivatives(inp, hidd, out):
        out = st.integers(min_value=1, max_value=50)) 
 def test_num_biases_derivatives(inp, hidd, out):
     "Test if the number of biases'derivatives stored is the same of the number of weights (as it should be)"
-    network = ann.Ann(inp, hidd, out)
+    network = ann.Ann(num_inputs=inp, num_hidden=hidd, num_outputs=out, activation_function=act.sigmoid, loss_function=lf.binary_cross_entropy)
     for i in range(len(network.biases)):
         assert network.biases[i].size == network.biases_deriv[i].size
 
@@ -114,9 +114,10 @@ def test_num_biases_derivatives(inp, hidd, out):
        out = st.integers(min_value=1, max_value=50))
 def test_forward_prop(inp, hidd, out):
     "Test that the dimension of the forward propagation result is the same as the number of output layers of the neural network"
+    np.random.seed(1)
     dataset = np.random.randn(inp)
-    network = ann.Ann(inp, hidd, out)
-    assert network.num_outputs == network._forward_prop(dataset, act.sigmoid).size
+    network = ann.Ann(num_inputs=inp, num_hidden=hidd, num_outputs=out, activation_function=act.sigmoid, loss_function=lf.binary_cross_entropy)
+    assert network.num_outputs == network._forward_prop(dataset).size
     
 ########################################################################################################################## 
 
@@ -127,10 +128,10 @@ def test_forward_prop(inp, hidd, out):
        out = st.integers(min_value=1, max_value=50))
 def test_weights_deriv_after_backprop(inp, hidd, out):
     "Test that, after backpropagation, the dimensionalities of the weights'derivatives is still the same as the ones of weights"
-    network = ann.Ann(inp, hidd, out)
+    network = ann.Ann(num_inputs=inp, num_hidden=hidd, num_outputs=out, activation_function=act.sigmoid, loss_function=lf.binary_cross_entropy)
+    np.random.seed(1)
     error = np.random.uniform(-100, 100, out)
-    network.activation_func = act.sigmoid
-    network._backward_prop(error, act.deriv_sigmoid)
+    network._backward_prop(error)
     for i in range(len(network.weights)):
         for j in range(len(network.weights[i])):
             assert network.weights_deriv[i][j].size == network.weights[i][j].size
@@ -140,10 +141,10 @@ def test_weights_deriv_after_backprop(inp, hidd, out):
        out = st.integers(min_value=1, max_value=50))
 def test_biases_deriv_after_backprop(inp, hidd, out):
     "Test that, after backpropagation, the dimensionalities of the biases'derivatives is still the same as the ones of biases"
-    network = ann.Ann(inp, hidd, out)
+    network = ann.Ann(num_inputs=inp, num_hidden=hidd, num_outputs=out, activation_function=act.sigmoid, loss_function=lf.binary_cross_entropy)
+    np.random.seed(1)
     error = np.random.uniform(-100, 100, out)
-    network.activation_func = act.sigmoid
-    network._backward_prop(error, act.deriv_sigmoid)
+    network._backward_prop(error)
     for i in range(len(network.biases)):
         assert network.biases_deriv[i].size == network.biases[i].size    
 
@@ -158,10 +159,10 @@ def test_biases_deriv_after_backprop(inp, hidd, out):
        learning_rate = st.floats(min_value=0.0001, max_value=10, allow_nan=False))
 def test_weights_structure_after_gradient (inp, hidd, out, learning_rate):
     "Test that the dimensionalities of the weights is still the same after the gradient descendent"
-    network = ann.Ann(inp, hidd, out)
+    network = ann.Ann(num_inputs=inp, num_hidden=hidd, num_outputs=out, activation_function=act.sigmoid, loss_function=lf.binary_cross_entropy)
+    np.random.seed(1)
     error = np.random.uniform(-100, 100, out)
-    network.activation_func = act.sigmoid
-    network._backward_prop(error, act.deriv_sigmoid)
+    network._backward_prop(error)
     
     previous_weights = []
     for i in range(len(network.layers) - 1):
@@ -180,10 +181,10 @@ def test_weights_structure_after_gradient (inp, hidd, out, learning_rate):
        learning_rate = st.floats(min_value=0.0001, max_value=10, allow_nan=False))
 def test_biases_structure_after_gradient (inp, hidd, out, learning_rate):
     "Test if the dimensionalities of the biases is still the same after the gradient descendent"
-    network = ann.Ann(inp, hidd, out)
+    network = ann.Ann(num_inputs=inp, num_hidden=hidd, num_outputs=out, activation_function=act.sigmoid, loss_function=lf.binary_cross_entropy)
+    np.random.seed(1)
     error = np.random.uniform(-100, 100, out)
-    network.activation_func = act.sigmoid
-    network._backward_prop(error, act.deriv_sigmoid)
+    network._backward_prop(error)
     
     previous_biases = []
     for i in range(len(network.layers) - 1):
@@ -215,18 +216,16 @@ target_values = [0, 1]
        out = st.integers(min_value=1, max_value=50))
 def test_number_correct_prediction_is_in_meaningful_range(data, inp, hidd, out):
     "Test that the number of correct predictions in in the range between 0 and the total number of predictions"
-    ann_test = ann.Ann(inp, hidd, out)
     if out == 1:
-        ann_test.set_activation_function(act.sigmoid)
-        ann_test.set_loss_function(lf.binary_cross_entropy)
+        ann_test = ann.Ann(num_inputs=inp, num_hidden=hidd, num_outputs=out, activation_function=act.sigmoid, loss_function=lf.binary_cross_entropy)
     else:
-        ann_test.set_activation_function(act.softmax)
-        ann_test.set_loss_function(lf.cross_entropy)
-        
+        ann_test = ann.Ann(num_inputs=inp, num_hidden=hidd, num_outputs=out, activation_function=act.softmax, loss_function=lf.cross_entropy)
+    
     size_dataset = data.draw(st.integers(min_value=1, max_value=1e2))
     targets = np.zeros((size_dataset, out))
     for i in range(len(targets)):
         targets[i] = data.draw(st.lists(st.sampled_from(target_values), min_size=out, max_size=out))
+    np.random.seed(1)
     inputs = np.random.standard_normal((size_dataset, inp))
     inputs = np.array(inputs)
     targets = np.array(targets)
@@ -243,9 +242,7 @@ def test_number_correct_prediction_is_in_meaningful_range(data, inp, hidd, out):
        file_name = st.text(alphabet = st.characters(whitelist_categories = ('L', 'N'))))
 def test_save_correctly(inp, hidd, out, file_name):
     "Test that all the parameters of the neural network are saved correctly"
-    ann_test = ann.Ann(inp, hidd, out)
-    ann_test.set_activation_function(act.sigmoid)
-    ann_test.set_loss_function(lf.binary_cross_entropy)
+    ann_test = ann.Ann(num_inputs=inp, num_hidden=hidd, num_outputs=out, activation_function=act.sigmoid, loss_function=lf.binary_cross_entropy)
     ann_test.save_parameters(file_name)
     parameters = pickle.load(open("./" + file_name + ".pkl", 'rb'))
     os.remove("./" + file_name + ".pkl")
@@ -268,9 +265,7 @@ def test_save_correctly(inp, hidd, out, file_name):
        file_name = st.text(alphabet = st.characters(whitelist_categories = ('L', 'N'))))
 def test_loading_parameters(inp, hidd, out, file_name):
     "Test that all the parameters of the neural network are loaded correctly"
-    ann_test = ann.Ann(inp, hidd, out)
-    ann_test.set_activation_function(act.sigmoid)
-    ann_test.set_loss_function(lf.binary_cross_entropy)
+    ann_test = ann.Ann(num_inputs=inp, num_hidden=hidd, num_outputs=out, activation_function=act.sigmoid, loss_function=lf.binary_cross_entropy)
     ann_test.save_parameters(file_name)
     biases, weights, num_inputs, num_hidd, num_outputs, activation_function, loss_function = ann.Ann.load_parameters("./" + file_name + ".pkl")
     os.remove("./" + file_name + ".pkl")
@@ -296,9 +291,7 @@ def test_loading_parameters(inp, hidd, out, file_name):
        file_name = st.text(alphabet = st.characters(whitelist_categories = ('L', 'N'))))
 def test_bilding_network_from_saving_parameters(inp, hidd, out, file_name):
     "Test that the neural network is loaded correctly from the saving file"
-    ann_test = ann.Ann(inp, hidd, out)
-    ann_test.set_activation_function(act.sigmoid)
-    ann_test.set_loss_function(lf.binary_cross_entropy)
+    ann_test = ann.Ann(num_inputs=inp, num_hidden=hidd, num_outputs=out, activation_function=act.sigmoid, loss_function=lf.binary_cross_entropy)
     ann_test.save_parameters(file_name)
     ann_loaded = ann.Ann.load_and_set_network("./" + file_name + ".pkl")
     os.remove("./" + file_name + ".pkl")
@@ -439,5 +432,4 @@ def test_inf_values_cross_entropy_deriv(data):
     target = np.array(target)
     result = lf.cross_entropy_deriv(prediction, target)
     assert np.all(result > -np.inf) and np.all(result < np.inf)
-
 

@@ -466,11 +466,9 @@ class Ann:
         weights = parameters[4]
         activation_function = parameters[5]
         loss_function = parameters[6]
-        network_loaded = cls(num_inputs, num_hidd, num_outputs)
+        network_loaded = cls(num_inputs=num_inputs, num_hidden=num_hidd, num_outputs=num_outputs, activation_function=activation_function, loss_function=loss_function)
         network_loaded.biases = biases
         network_loaded.weights = weights
-        network_loaded.set_activation_function(activation_function)
-        network_loaded.set_loss_function(loss_function)
         return network_loaded
         
   
