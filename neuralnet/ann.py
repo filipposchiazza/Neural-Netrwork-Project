@@ -7,7 +7,7 @@ import loss_functions as lf
 
 class Ann:
     
-    def __init__(self, num_inputs, num_hidden, num_outputs):
+    def __init__(self, num_inputs, num_hidden, num_outputs, seed=None):
         
         """Initialize the Artificial Neural Network
         
@@ -28,7 +28,7 @@ class Ann:
         
         Example
         -------
-        >>> ann.Ann(10, [5, 3], 2)
+        >>> ann.Ann(num_inputs=10, num_hidden=[5, 3], num_outputs=2)
         
         """
         
@@ -37,6 +37,9 @@ class Ann:
         self.num_hidden = np.array(num_hidden)
         self.num_outputs = num_outputs
         self.layers = np.concatenate(([self.num_inputs], self.num_hidden, [self.num_outputs]))
+        
+        # Set the seed for the random generation
+        np.random.seed(seed)
         
         # Create weights and initialize them with random values
         self.weights = []       
@@ -201,7 +204,7 @@ class Ann:
         -------
         >>> import import activation_functions as act
         >>> import loss_functions as lf
-        >>> ann.Ann(10, [5, 3], 2)
+        >>> ann.Ann(num_inputs=10, num_hidden=[5, 3], num_outputs=2)
         >>> Ann.train(data, labels, 1000, 0.1, act.sigmoid, lf.binary_cross_entropy)
 
         """
