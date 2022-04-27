@@ -44,20 +44,3 @@ def cross_entropy_deriv(prediction, target):
     return - target/prediction
 
 ###############################################################################
-"""
-# MSE is generally used for regression tasks
-
-def mse(prediction, target):
-    "Mean Squared Error loss function"
-    difference = prediction - target
-    difference_squared = difference**2
-    return np.sum(difference_squared) / len(difference) 
-
-
-def mse_deriv(prediction, target):
-    "Derivative of Mean Squared Error"
-    difference = prediction - target
-    return 2 / len(difference) * difference
-
-###############################################################################
-"""
