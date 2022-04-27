@@ -42,36 +42,3 @@ def deriv_softmax(x):
     return jacobian
 
 ##############################################################################
-"""
-def relu(x):
-    "Definition of the Rectified Linear Unit function"
-    return x * (x>0)
-
-
-def deriv_relu(x):
-    "Definition of the jacobian of the Rectified Linear Unit function"
-    lenght = len(x)
-    jacobian = np.zeros((lenght, lenght))
-    for i in range(lenght):
-        jacobian[i][i] = 1 * (x[i]>0)
-    return jacobian
-   
-##############################################################################
-
-def elu (x, alpha=1):
-    "Definition of the ELU function"
-    result = np.where(x>0, x, alpha*(np.exp(x) - 1))
-    return result
-
-
-def deriv_elu(x, alpha=100):
-    "Definition of the jacobian of the ELU function"
-    result = np.where(x>0, 1, alpha * np.exp(x))
-    lenght = len(x)
-    jacobian = np.zeros((lenght, lenght))
-    for i in range(lenght):
-        jacobian[i][i] = result[i]
-    return jacobian
-
-##############################################################################
-"""
