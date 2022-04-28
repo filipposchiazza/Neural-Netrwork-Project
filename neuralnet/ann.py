@@ -458,7 +458,7 @@ class Ann:
         network_loaded = cls(num_inputs=num_inputs, num_hidden=num_hidd, 
                              num_outputs=num_outputs, activation_function=activation_function, 
                              loss_function=loss_function)
-        cls._set_parameters(saved_weights=weights, saved_biases=biases)
+        network_loaded._set_parameters(saved_weights=weights, saved_biases=biases)
         return network_loaded
         
   
