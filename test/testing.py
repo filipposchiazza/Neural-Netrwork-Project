@@ -117,7 +117,7 @@ def test_forward_prop(inp, hidd, out):
     np.random.seed(1)
     dataset = np.random.randn(inp)
     network = ann.Ann(num_inputs=inp, num_hidden=hidd, num_outputs=out, activation_function=act.sigmoid, loss_function=lf.binary_cross_entropy)
-    assert network.num_outputs == network._forward_prop(dataset).size
+    assert network.num_outputs == network._forward_prop(inputs=dataset).size
     
 ########################################################################################################################## 
 
@@ -131,7 +131,7 @@ def test_weights_deriv_after_backprop(inp, hidd, out):
     network = ann.Ann(num_inputs=inp, num_hidden=hidd, num_outputs=out, activation_function=act.sigmoid, loss_function=lf.binary_cross_entropy)
     np.random.seed(1)
     error = np.random.uniform(-100, 100, out)
-    network._backward_prop(error)
+    network._backward_prop(error=error)
     for i in range(len(network.weights)):
         for j in range(len(network.weights[i])):
             assert network.weights_deriv[i][j].size == network.weights[i][j].size
@@ -144,7 +144,7 @@ def test_biases_deriv_after_backprop(inp, hidd, out):
     network = ann.Ann(num_inputs=inp, num_hidden=hidd, num_outputs=out, activation_function=act.sigmoid, loss_function=lf.binary_cross_entropy)
     np.random.seed(1)
     error = np.random.uniform(-100, 100, out)
-    network._backward_prop(error)
+    network._backward_prop(error=error)
     for i in range(len(network.biases)):
         assert network.biases_deriv[i].size == network.biases[i].size    
 
@@ -162,13 +162,13 @@ def test_weights_structure_after_gradient (inp, hidd, out, learning_rate):
     network = ann.Ann(num_inputs=inp, num_hidden=hidd, num_outputs=out, activation_function=act.sigmoid, loss_function=lf.binary_cross_entropy)
     np.random.seed(1)
     error = np.random.uniform(-100, 100, out)
-    network._backward_prop(error)
+    network._backward_prop(error=error)
     
     previous_weights = []
     for i in range(len(network.layers) - 1):
         previous_weights.append(np.copy(network.weights[i]))
     
-    network._gradient_descendent(learning_rate)
+    network._gradient_descendent(learning_rate=learning_rate)
     
     for i in range(len(network.weights)):
         for j in range(len(network.weights[i])):
@@ -184,13 +184,13 @@ def test_biases_structure_after_gradient (inp, hidd, out, learning_rate):
     network = ann.Ann(num_inputs=inp, num_hidden=hidd, num_outputs=out, activation_function=act.sigmoid, loss_function=lf.binary_cross_entropy)
     np.random.seed(1)
     error = np.random.uniform(-100, 100, out)
-    network._backward_prop(error)
+    network._backward_prop(error=error)
     
     previous_biases = []
     for i in range(len(network.layers) - 1):
         previous_biases.append(np.copy(network.biases[i]))
     
-    network._gradient_descendent(learning_rate)
+    network._gradient_descendent(learning_rate=learning_rate)
     
     for i in range(len(network.biases)):
         assert network.biases[i].size == previous_biases[i].size
@@ -229,7 +229,7 @@ def test_number_correct_prediction_is_in_meaningful_range(data, inp, hidd, out):
     inputs = np.random.standard_normal((size_dataset, inp))
     inputs = np.array(inputs)
     targets = np.array(targets)
-    a, num_correct_classification, c = ann_test.evaluate_classification(inputs, targets) 
+    a, num_correct_classification, c = ann_test.evaluate_classification(inputs=inputs, targets=targets) 
     assert num_correct_classification >= 0 and num_correct_classification <= len(targets)
 
 
@@ -243,7 +243,7 @@ def test_number_correct_prediction_is_in_meaningful_range(data, inp, hidd, out):
 def test_save_correctly(inp, hidd, out, file_name):
     "Test that all the parameters of the neural network are saved correctly"
     ann_test = ann.Ann(num_inputs=inp, num_hidden=hidd, num_outputs=out, activation_function=act.sigmoid, loss_function=lf.binary_cross_entropy)
-    ann_test.save_parameters(file_name)
+    ann_test.save_parameters(file_name=file_name)
     parameters = pickle.load(open("./" + file_name + ".pkl", 'rb'))
     os.remove("./" + file_name + ".pkl")
     assert parameters[0] == ann_test.num_inputs
@@ -266,8 +266,8 @@ def test_save_correctly(inp, hidd, out, file_name):
 def test_loading_parameters(inp, hidd, out, file_name):
     "Test that all the parameters of the neural network are loaded correctly"
     ann_test = ann.Ann(num_inputs=inp, num_hidden=hidd, num_outputs=out, activation_function=act.sigmoid, loss_function=lf.binary_cross_entropy)
-    ann_test.save_parameters(file_name)
-    biases, weights, num_inputs, num_hidd, num_outputs, activation_function, loss_function = ann.Ann.load_parameters("./" + file_name + ".pkl")
+    ann_test.save_parameters(file_name=file_name)
+    biases, weights, num_inputs, num_hidd, num_outputs, activation_function, loss_function = ann.Ann.load_parameters(file_name="./" + file_name + ".pkl")
     os.remove("./" + file_name + ".pkl")
     assert num_inputs == ann_test.num_inputs
     assert np.all(num_hidd == ann_test.num_hidden)
@@ -292,8 +292,8 @@ def test_loading_parameters(inp, hidd, out, file_name):
 def test_bilding_network_from_saving_parameters(inp, hidd, out, file_name):
     "Test that the neural network is loaded correctly from the saving file"
     ann_test = ann.Ann(num_inputs=inp, num_hidden=hidd, num_outputs=out, activation_function=act.sigmoid, loss_function=lf.binary_cross_entropy)
-    ann_test.save_parameters(file_name)
-    ann_loaded = ann.Ann.load_and_set_network("./" + file_name + ".pkl")
+    ann_test.save_parameters(file_name=file_name)
+    ann_loaded = ann.Ann.load_and_set_network(file_name="./" + file_name + ".pkl")
     os.remove("./" + file_name + ".pkl")
     assert ann_loaded.num_inputs == ann_test.num_inputs
     assert np.all(ann_loaded.num_hidden == ann_test.num_hidden)

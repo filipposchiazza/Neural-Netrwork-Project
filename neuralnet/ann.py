@@ -220,20 +220,19 @@ class Ann:
             for single_input, target in zip(inputs, targets):
                 
                 # forward propagation
-                output = self._forward_prop(single_input)
+                output = self._forward_prop(inputs=single_input)
                 
                 # calculate the error
-                error = self.loss_func_deriv(output, target)
+                error = self.loss_func_deriv(prediction=output, target=target)
                 
                 # backpropagation
-                self._backward_prop(error)
+                self._backward_prop(error=error)
                 
                 # apply gradient descendent
-                self._gradient_descendent(learning_rate)
+                self._gradient_descendent(learning_rate=learning_rate)
                 
                 # evaluate the error for each input
-                sum_error += self.loss_func(output, target)
-            
+                sum_error += self.loss_func(prediction=output, target=target)
             if verbose == True:
                 print("Epoch {}/{} - Error: {}".format(i+1, epochs, float(sum_error / n)))
         
@@ -255,7 +254,7 @@ class Ann:
 
         Example
         -------
-        >>> Ann.predict(data)
+        >>> Ann.predict(inputs=data)
         
         """
         prediction = self._forward_prop(inputs)
@@ -279,7 +278,7 @@ class Ann:
         
         Example
         -------
-        >>Ann.evaluate_classification(dataset_test, target_test)
+        >>Ann.evaluate_classification(inputs=dataset_test, targets=target_test)
 
         """
         
