@@ -27,8 +27,8 @@ def deriv_sigmoid(x):
     
     Parameters
     ----------
-    x : float or array-like
-        Input of the derivative/jacobian of the sigmoid function.
+    x : array-like
+        Input of the derivative/jacobian of the sigmoid function. If the input is an integer or a float, convert it to a list.
 
     Returns
     -------
@@ -37,11 +37,10 @@ def deriv_sigmoid(x):
         In the particular case of a float as input, the ouput will be a numpy mono-dimensional array with one element (the simple derivative).
 
     """
-    x = np.array(x)
     lenght = np.size(x)
-    jacobian = np.zeros((lenght, lenght))
-    for i in range(lenght):
-        jacobian[i][i] = sigmoid(x[i]) * (1 - sigmoid(x[i]))
+    x = np.array(x)
+    i, j = np.indices((lenght, lenght))
+    jacobian = np.where(i==j, sigmoid(x[i]) * (1 - sigmoid(x[i])), 0)
     return jacobian
 
 ##############################################################################
@@ -81,13 +80,17 @@ def deriv_softmax(x):
     """
     lenght = np.size(x)
     a = softmax(x)
+    i, j = np.indices((lenght, lenght))
+    jacobian = np.where(i==j, a[i] * (1 - a[i]), - a[i] * a[j])
+    
+    """
     jacobian = np.zeros((lenght, lenght))
     for i in range(lenght):
         for j in range(lenght):
             if i==j:
                 jacobian[i][j] = a[i] * (1 - a[i])
             else:
-                jacobian[i][j] = - a[i] * a[j]
+                jacobian[i][j] = - a[i] * a[j]"""
     return jacobian
 
 ##############################################################################
