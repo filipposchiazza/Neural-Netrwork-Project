@@ -339,7 +339,7 @@ class Ann:
     
     #Set methods
     
-    def set_parameters(self, saved_weights, saved_biases):
+    def _set_parameters(self, saved_weights, saved_biases):
         """Set the parameters(weights and biases) of the network"""
         self.weights = saved_weights
         self.biases = saved_biases
@@ -459,8 +459,7 @@ class Ann:
         network_loaded = cls(num_inputs=num_inputs, num_hidden=num_hidd, 
                              num_outputs=num_outputs, activation_function=activation_function, 
                              loss_function=loss_function)
-        network_loaded.biases = biases
-        network_loaded.weights = weights
+        cls._set_parameters(saved_weights=weights, saved_biases=biases)
         return network_loaded
         
   
