@@ -455,18 +455,10 @@ class Ann:
             Neural network with weights, biases, number of neuron for each layer, activation and loss functions stored in the file "file_name"
 
         """
-        
-        if file_name[-4:] != '.pkl':
-            file_name += '.pkl'
-        parameters = pickle.load(open(file_name, 'rb'))
-        num_inputs = parameters[0]
-        num_hidd = parameters[1]
-        num_outputs = parameters[2]
-        biases = parameters[3]
-        weights = parameters[4]
-        activation_function = parameters[5]
-        loss_function = parameters[6]
-        network_loaded = cls(num_inputs=num_inputs, num_hidden=num_hidd, num_outputs=num_outputs, activation_function=activation_function, loss_function=loss_function)
+        biases, weights, num_inputs, num_hidd, num_outputs, activation_function, loss_function = cls.load_parameters(file_name)
+        network_loaded = cls(num_inputs=num_inputs, num_hidden=num_hidd, 
+                             num_outputs=num_outputs, activation_function=activation_function, 
+                             loss_function=loss_function)
         network_loaded.biases = biases
         network_loaded.weights = weights
         return network_loaded
