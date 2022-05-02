@@ -1,11 +1,18 @@
-"Diamo inizio al gioco...vediamo se mi ricordo ancora come si fa"
-
 import numpy as np
-import pickle
+import os
+import json
 import activation_functions as act
 import loss_functions as lf
 
 class Ann:
+    
+    activation_list = {act.sigmoid.__name__ : act.sigmoid,
+                           act.softmax.__name__ : act.softmax}
+    
+    loss_list = {lf.binary_cross_entropy.__name__ : lf.binary_cross_entropy,
+                     lf.cross_entropy.__name__ : lf.cross_entropy}
+    
+    
     
     def __init__(self, num_inputs, num_hidden, num_outputs, activation_function, loss_function, seed=None):
         
@@ -334,7 +341,7 @@ class Ann:
         """Return the loss function used in the neural network process of training"""
         return self.loss_func
     
-    ############################################################################################
+#################################################################################################
     
     #Set methods
     
@@ -363,102 +370,334 @@ class Ann:
         elif loss_func == lf.cross_entropy:
             self.loss_func_deriv = lf.cross_entropy_deriv 
         
-    ##########################################################################################
+##########################################################################################
     
     #Saving method      
     
-    def save_parameters(self, file_name, path='./'):
-        """Save the structure of the network (neurons for each layer), weights and biases, activation function
-        and loss function of the neural network in a .pkl file.
+    def _save_building_parameters(self, location):
+        """Save number of inputs, hidden layers(number and content) and outputs in the file "building_parameters.json",
+        stored in the location given as argument to the function.
         
+
         Parameters
         ----------
-        file_name : string
-            Name of the file where the neural network parameters will be stored. 
-            The file will be a .pkl and it is possible to add or not the extension.
-        path : string, optional
-            Directory where the file will be saved. If the file already exists, it will be overwritten. The default is './'.
+        location : string
+            Directory where the file "building_parameters.json" is stored.
 
         Returns
         -------
-        string:
-            Message of save confirmation.
+        None.
 
         """
         
-        if file_name[-4:] != '.pkl':
-            file_name += '.pkl'
-        total_name = path + file_name
-        parameters = [self.num_inputs, self.num_hidden, self.num_outputs, self.biases, self.weights, self.activation_func, self.loss_func]
-        pickle.dump(parameters, open(total_name, 'wb'))
-        return 'Save completed successfully'
+        total_file_name = location + 'building_parameters.json'
+        data = [self.num_inputs, self.num_hidden.tolist(), self.num_outputs]
+        # save
+        with open(total_file_name, 'w') as f:
+            json.dump(data, f)
+        f.close()
+
     
-    ###################################################################################################################################
+    def _save_biases(self, location):
+        """Save biases in the file "biases.json", stored in the location given as argument to the function.
+        
+
+        Parameters
+        ----------
+        location : string
+            Directory where the file "biases.json" is stored.
+
+        Returns
+        -------
+        None.
+
+        """
+        
+        total_file_name = location + 'biases.json'
+        data = self.biases
+        # transform numpy arrays into lists
+        for i in range(len(data)):
+            data[i] = data[i].tolist()
+        # save
+        with open(total_file_name, 'w') as f:
+            json.dump(data, f)
+        f.close()
+        # restore biases
+        for i in range(len(self.biases)):
+            self.biases[i] = np.asarray(self.biases[i])
+            
     
-    #Loading methods
+    def _save_weights(self, location):
+        """Save weights in the file "weights.json", stored in the location given as argument to the function.
+        
+
+        Parameters
+        ----------
+        location : string
+            Directory where the file "weights.json" is stored.
+
+        Returns
+        -------
+        None.
+
+        """
+        
+        total_file_name = location + 'weights.json'
+        data = self.weights
+        # transform numpy arrays into lists
+        for i in range(len(data)):
+            data[i] = data[i].tolist()
+        # save
+        with open(total_file_name, 'w') as f:
+            json.dump(data, f)
+        f.close()
+        # restore weights
+        for i in range(len(self.weights)):
+            self.weights[i] = np.asarray(self.weights[i])
+        
     
-    @classmethod
-    def load_parameters(cls, file_name):
-        """ Load from a file the weights, the biases, the number of neurons for each layer, the activation and the loss function.
+    def _save_activation_and_loss_functions(self, location):
+        """Save the activation and loss functions in the file "activation_loss_functions.json",
+        stored in the location given as argument to the function.
+        
+
+        Parameters
+        ----------
+        location : string
+            Directory where the file "activation_loss_functions.json" is stored.
+
+        Returns
+        -------
+        None.
+
+        """
+        
+        total_file_name = location + 'activation_loss_functions.json'
+        data = {'Activation function' : self.activation_func.__name__,
+                'Loss function' : self.loss_func.__name__}
+        # save
+        with open(total_file_name, 'w') as f:
+            json.dump(data, f)
+        f.close()
+        
+        
+    def save(self, directory_name = 'network_parameters/', path = './'):
+        """Save the structure of the network (neurons for each layer), weights and biases, activation function
+        and loss function of the neural network in json format.
         
         Parameters
         ----------
-        file_name : string
-            File source where weights, biases and number of neurons for each layer are stored (look at 'save_parameters' method).
+        directory_name : string
+            Name of the directory where the neural neworks parameters will be saved. 
+            Be sure that the directory does not already exist.
+            
+        path : string, optional
+            Location where the directory will be created. The default is './'.
+
+        Returns
+        -------
+        None.
+
+        """
+    
+        total_directory_name = path + directory_name
+        os.mkdir(total_directory_name)
+        self._save_building_parameters(total_directory_name)
+        self._save_biases(total_directory_name)
+        self._save_weights(total_directory_name)
+        self._save_activation_and_loss_functions(total_directory_name)
+
+##########################################################################################################################
+    
+    #Loading methods
+    @classmethod
+    def _load_parameters(cls, location):
+        """Load the number of neural network inputs, hidden layers and outputs from the file "building_parameters.json",
+        placed in the location given as input to the function. 
+        
+
+        Parameters
+        ----------
+        location : string
+            Location where "building_parameters.json" is stored.
+
+        Returns
+        -------
+        num_inp : int
+            Number of inputs of the neural network.
+        num_hidd : list
+            The element i of the array specifies the number of neurons in the hidden layer i, so the total number of hidden layer is given
+            by the dimension of the array.
+        num_out : int
+            Number of outputs of the neural network.
+
+        """
+        
+        with open(location + 'building_parameters.json', 'r') as f:
+            parameters = json.load(f)
+        f.close()
+        num_inp = parameters[0]
+        num_hidd = parameters[1]
+        num_out = parameters[2]
+        return num_inp, num_hidd, num_out
+    
+    
+    @classmethod
+    def _load_activation_and_loss(cls, location):
+        """Load the activation and loss functions from the file "activation_loss_functions.json",
+        placed in the location given as input to the function. 
+        
+
+        Parameters
+        ----------
+        cls : Ann
+        location : string
+            Location where "activation_loss_functions.json" is stored.
+
+        Returns
+        -------
+        activation_function : func
+            Activation function of the neural network.
+        loss_function : func
+            Loss function of the neural network.
+
+        """
+        
+        with open(location + 'activation_loss_functions.json', 'r') as f:
+            data = json.load(f)
+        f.close()
+        activation_function = cls.activation_list[data['Activation function']]
+        loss_function = cls.loss_list[data['Loss function']]
+        return activation_function, loss_function
+    
+    
+    
+    @classmethod
+    def _load_biases(cls, location):
+        """Load the neural network's biases from the file "biases.json",
+        placed in the location given as input to the function. 
+        
+
+        Parameters
+        ----------
+        cls : Ann
+        location : string
+            Location where "biases.json" is stored.
 
         Returns
         -------
         biases : list
-            Biases of the neural network saved previously.
-        weights : list
-            Weights of the neural network saved previously.
-        num_inputs : int
-            Number of neurons in the input layer of the neural network saved previously.
-        num_hidden : list
-            Number of neurons in the hidden layers of the neural network saved previously.
-        num_outputs : int
-            Number of neurons in the output layer of the neural network saved previously.
-        activation_function : func
-            Activation function of the neural network
-        loss_func : func
-            Loss function of the neural network
-            
+            Neural network's biases.
+
         """
         
-        if file_name[-4:] != '.pkl':
-            file_name += '.pkl'
-        parameters = pickle.load(open(file_name, 'rb'))
-        num_inputs = parameters[0]
-        num_hidd = parameters[1]
-        num_outputs = parameters[2]
-        biases = parameters[3]
-        weights = parameters[4]
-        activation_function = parameters[5]
-        loss_function = parameters[6]
-        return biases, weights, num_inputs, num_hidd, num_outputs, activation_function, loss_function
-    
+        with open(location + 'biases.json', 'r') as f:
+            biases = json.load(f)
+        f.close()
+        
+        for i in range(len(biases)):
+            biases[i] = np.asarray(biases[i])
+        
+        return biases
     
     @classmethod
-    def load_and_set_network(cls, file_name):
-        """Create a neural network with weights, biases, number of neuron for each layer, activation and loss functions stored in "file_name"
+    def _load_weights(cls, location):
+        """Load the neural network's weights from the file "weights.json",
+        placed in the location given as input to the function. 
         
+
         Parameters
         ----------
-        file_name : string
-            File source where weights, biases, number of neurons for each layer,activation and loss function
-            are stored (look at 'save_parameters' method).
+        cls : Ann
+        location : string
+            Location where "biases.json" is stored.
 
         Returns
         -------
-        network_loaded : Ann
-            Neural network with weights, biases, number of neuron for each layer, activation and loss functions stored in the file "file_name"
+        weights : list
+            Neural network's weights.
 
         """
-        biases, weights, num_inputs, num_hidd, num_outputs, activation_function, loss_function = cls.load_parameters(file_name)
-        network_loaded = cls(num_inputs=num_inputs, num_hidden=num_hidd, 
-                             num_outputs=num_outputs, activation_function=activation_function, 
-                             loss_function=loss_function)
-        network_loaded._set_parameters(saved_weights=weights, saved_biases=biases)
-        return network_loaded
         
+        with open(location + 'weights.json', 'r') as f:
+            weights = json.load(f)
+        f.close()
+        
+        for i in range(len(weights)):
+            weights[i] = np.asarray(weights[i])
+        
+        return weights
+
+
+
+    @classmethod
+    def _load_all(cls, directory_name):
+        """Clip all the load function together.
+        
+
+        Parameters
+        ----------
+        cls : Ann
+        directory_name : string
+            Directory where the json files needed to setup the neural network are stored.
+
+        Returns
+        -------
+        num_inp : int
+            Number of inputs of the neural network.
+        num_hidd : list
+            The element i of the array specifies the number of neurons in the hidden layer i, so the total number of hidden layer is given
+            by the dimension of the array.
+        num_out : int
+            Number of outputs of the neural network.
+        activation_function : func
+            Activation function of the neural network.
+        loss_function : func
+            Loss function of the neural network.
+        biases : list
+            Neural network's biases.
+        weights : list
+            Neural network's weights.
+
+        """
+        
+        num_inp, num_hidd, num_out = cls._load_parameters(directory_name)
+        activation_function, loss_function = cls._load_activation_and_loss(directory_name)
+        biases = cls._load_biases(directory_name)
+        weights = cls._load_weights(directory_name)
+        
+        return num_inp, num_hidd, num_out, activation_function, loss_function, biases, weights
+    
+
+    @classmethod
+    def load_neural_network(cls, directory_name):
+        """Return an Ann object created with the parameters stored in the directory given as argument to the function.
+        
+
+        Parameters
+        ----------
+        cls : Ann
+        directory_name : string
+            Directory where the json files needed to setup the neural network are stored.
+
+        Returns
+        -------
+        neural_network : Ann
+            Ann object created with the parameters stored in the directory given as argument to the function.
+
+        """
+        
+        
+        num_inp, num_hidd, num_out, activation_function, loss_function, biases, weights = cls._load_all(directory_name)
+        
+        neural_network = cls(num_inputs = num_inp,
+                             num_hidden = num_hidd, 
+                             num_outputs = num_out,
+                             activation_function = activation_function,
+                             loss_function = loss_function)
+        
+        neural_network._set_parameters(weights, biases)
+        
+        return neural_network 
+
   
