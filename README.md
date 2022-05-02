@@ -41,7 +41,6 @@ Project is created with:
 * Python 3.8
 * Numpy 1.21.2
 * Sklearn 0.24.1
-* Pickle 4.0
 * Hypothesis 6.29.3
 
 ## How to install
@@ -113,11 +112,11 @@ my_neural_network.evaluate_classification(data_test, targets_test)
 ![Evaluate classification output](./images/Evaluate_classification.png)\
 
 ### Saving parameters and loading the network
-At this point it is possible to save the parameters of the neural network (weights, biases, number of neurons for each layers, the activation and the loss function) in *pkl* format
+At this point it is possible to save the parameters of the neural network (weights, biases, number of neurons for each layers, the activation and the loss function) in *json* format
 ```python
-my_neural_network.save_parameters(file_name="parameters.pkl")
+my_neural_network.save(directory_name="network_parameters/")
 ```
-For future predictions, you can create a neural network with the parameters stored in the *pkl* file
+For future predictions, you can create a neural network with the parameters stored in json format in the directory previously created ("network_parameters/")
 ```python
 network_loaded = Ann.load_and_set_network("parameters.pkl")
 ```
