@@ -15,25 +15,24 @@ import activation_functions as act
 import loss_functions as lf
 
 
-max_num_neurons = 10
-num_neuron = [i for i in range(1, max_num_neurons + 1)]
-"""
-##################################################################################################################################
+max_num_neurons = 20
 
+##################################################################################################################################
+"""
 #Test the costruction of the neural network (the function __init__)
 
 @given(inp = st.integers(min_value=1, max_value=1e5),
-       hidd = st.lists(st.sampled_from(num_neuron), min_size=0, max_size=10),
+       hidd = st.lists(st.integers(min_value=1, max_value=max_num_neurons), min_size=0, max_size=10),
        out = st.integers(min_value=1, max_value=50))
 def test_num_layers(inp, hidd, out):
     "Test if the number of layers is the correct one, according to the inputs given to build the ann"
     network = ann.Ann(num_inputs=inp, num_hidden=hidd, num_outputs=out, activation_function=act.sigmoid, loss_function=lf.binary_cross_entropy)
     assert network.layers.size == len([network.num_inputs]) + network.num_hidden.size + len([network.num_outputs])
  
-    
+
 @given(inp = st.integers(min_value=1, max_value=1e5),
-       hidd = st.lists(st.sampled_from(num_neuron), min_size=0, max_size=10),
-       out = st.integers(min_value=1, max_value=50))   
+       hidd = st.lists(st.integers(min_value=1, max_value=max_num_neurons), min_size=0, max_size=10),
+       out = st.integers(min_value=1, max_value=50)) 
 def test_num_weights(inp, hidd, out):
     "Test if the total number of weights of the neural network is the correct one, according to the inputs given to build it"
     network = ann.Ann(num_inputs=inp, num_hidden=hidd, num_outputs=out, activation_function=act.sigmoid, loss_function=lf.binary_cross_entropy)
@@ -48,7 +47,7 @@ def test_num_weights(inp, hidd, out):
 
 
 @given(inp = st.integers(min_value=1, max_value=1e5),
-       hidd = st.lists(st.sampled_from(num_neuron), min_size=0, max_size=10),
+       hidd = st.lists(st.integers(min_value=1, max_value=max_num_neurons), min_size=0, max_size=10),
        out = st.integers(min_value=1, max_value=50)) 
 def test_num_biases(inp, hidd, out):
     "Test if the total number of biases is equal to (total number of neurons - number of neurons in the input layer)"
@@ -63,7 +62,7 @@ def test_num_biases(inp, hidd, out):
 
 
 @given(inp = st.integers(min_value=1, max_value=1e5),
-       hidd = st.lists(st.sampled_from(num_neuron), min_size=0, max_size=10),
+       hidd = st.lists(st.integers(min_value=1, max_value=max_num_neurons), min_size=0, max_size=10),
        out = st.integers(min_value=1, max_value=50))
 def test_num_linear_comb(inp, hidd, out):
     "Test if the total number of linear combinations is equal to (total number of neurons - number of neurons in the input layer)"
@@ -76,9 +75,10 @@ def test_num_linear_comb(inp, hidd, out):
         counter_second += network.layers[i]
     assert counter_first == counter_second
     
+    
 @given(inp = st.integers(min_value=1, max_value=1e5),
-       hidd = st.lists(st.sampled_from(num_neuron), min_size=0, max_size=10),
-       out = st.integers(min_value=1, max_value=50))   
+       hidd = st.lists(st.integers(min_value=1, max_value=max_num_neurons), min_size=0, max_size=10),
+       out = st.integers(min_value=1, max_value=50))
 def test_num_activations(inp, hidd, out):
     "Test if the numbers of activations stored for each layer is the correct one (corresponding to the number of neurons)"
     network = ann.Ann(num_inputs=inp, num_hidden=hidd, num_outputs=out, activation_function=act.sigmoid, loss_function=lf.binary_cross_entropy)
@@ -87,8 +87,8 @@ def test_num_activations(inp, hidd, out):
 
         
 @given(inp = st.integers(min_value=1, max_value=1e5),
-       hidd = st.lists(st.sampled_from(num_neuron), min_size=0, max_size=10),
-       out = st.integers(min_value=1, max_value=50)) 
+       hidd = st.lists(st.integers(min_value=1, max_value=max_num_neurons), min_size=0, max_size=10),
+       out = st.integers(min_value=1, max_value=50))
 def test_num_weights_derivatives(inp, hidd, out):
     "Test if the number of weights'derivatives stored is the same of the number of weights (as it should be)"
     network = ann.Ann(num_inputs=inp, num_hidden=hidd, num_outputs=out, activation_function=act.sigmoid, loss_function=lf.binary_cross_entropy)
@@ -97,20 +97,54 @@ def test_num_weights_derivatives(inp, hidd, out):
 
 
 @given(inp = st.integers(min_value=1, max_value=1e5),
-       hidd = st.lists(st.sampled_from(num_neuron), min_size=0, max_size=10),
+       hidd = st.lists(st.integers(min_value=1, max_value=max_num_neurons), min_size=0, max_size=10),
        out = st.integers(min_value=1, max_value=50)) 
 def test_num_biases_derivatives(inp, hidd, out):
     "Test if the number of biases'derivatives stored is the same of the number of weights (as it should be)"
     network = ann.Ann(num_inputs=inp, num_hidden=hidd, num_outputs=out, activation_function=act.sigmoid, loss_function=lf.binary_cross_entropy)
     for i in range(len(network.biases)):
         assert network.biases[i].size == network.biases_deriv[i].size
-
+"""
 ##########################################################################################################################
 
 # Test the forward propagation method
 
+def test_specific_case_forward_propagation():
+    "Test the output of the forward propation for a specific combination of inputs, weights and biases"
+    w1 = np.array([[0.5, 0.4], [0.3, 0.7]])
+    b1 = np.array([0.3, 0.6])
+    weights = [w1]
+    biases = [b1]
+    neural_network = ann.Ann(num_inputs = 2, num_hidden = [], num_outputs = 2,
+                             activation_function = act.sigmoid, 
+                             loss_function = lf.binary_cross_entropy)
+    neural_network._set_parameters(weights, biases)
+    inputs = [1., 1.]
+    result = neural_network._forward_prop(inputs)
+    expected_result = np.array([0.75026011, 0.84553473])
+    assert np.all(np.isclose(result, expected_result, rtol=0.1, atol=1e-5))
+    
+    
+def test_limit_case_forward_propagation():
+    "Test the output of the forward propation for the limit case when all the weights and biases are equal to 0"
+    w1 = np.array([[0., 0.], [0., 0.]])
+    b1 = np.array([0.0, 0.0])
+    w2 = np.array([[0.], [0.]])
+    b2 = np.array([0.])
+    weights = [w1, w2]
+    biases = [b1, b2]
+    neural_network = ann.Ann(num_inputs = 2, num_hidden = [2], num_outputs = 1,
+                             activation_function = act.sigmoid, 
+                             loss_function = lf.binary_cross_entropy)
+    neural_network._set_parameters(weights, biases)
+    inputs = [1., 1.]
+    result = neural_network._forward_prop(inputs)
+    expected_result = np.array([0.5])
+    assert np.all(np.isclose(result, expected_result, rtol=0.1, atol=1e-5))
+    
+    
 @given(inp = st.integers(min_value=1, max_value=1e5),
-       hidd = st.lists(st.sampled_from(num_neuron), min_size=0, max_size=10),
+       hidd = st.lists(st.integers(min_value=1, max_value=max_num_neurons), min_size=0, max_size=10),
        out = st.integers(min_value=1, max_value=50))
 def test_forward_prop(inp, hidd, out):
     "Test that the dimension of the forward propagation result is the same as the number of output layers of the neural network"
@@ -120,11 +154,11 @@ def test_forward_prop(inp, hidd, out):
     assert network.num_outputs == network._forward_prop(inputs=dataset).size
     
 ########################################################################################################################## 
-
+"""
 # Test the backward propagation method
 
 @given(inp = st.integers(min_value=1, max_value=1e5),
-       hidd = st.lists(st.sampled_from(num_neuron), min_size=0, max_size=10),
+       hidd = st.lists(st.integers(min_value=1, max_value=max_num_neurons), min_size=0, max_size=10),
        out = st.integers(min_value=1, max_value=50))
 def test_weights_deriv_after_backprop(inp, hidd, out):
     "Test that, after backpropagation, the dimensionalities of the weights'derivatives is still the same as the ones of weights"
@@ -137,7 +171,7 @@ def test_weights_deriv_after_backprop(inp, hidd, out):
             assert network.weights_deriv[i][j].size == network.weights[i][j].size
    
 @given(inp = st.integers(min_value=1, max_value=1e5),
-       hidd = st.lists(st.sampled_from(num_neuron), min_size=0, max_size=10),
+       hidd = st.lists(st.integers(min_value=1, max_value=max_num_neurons), min_size=0, max_size=10),
        out = st.integers(min_value=1, max_value=50))
 def test_biases_deriv_after_backprop(inp, hidd, out):
     "Test that, after backpropagation, the dimensionalities of the biases'derivatives is still the same as the ones of biases"
@@ -413,15 +447,13 @@ def test_range_softmax_function_derivative(inputs):
     jacobian = act.deriv_softmax(inputs)
     assert np.all(jacobian >= -1) and np.all(jacobian <= 1)
     
-"""   
+ 
 ##################################################################################################################################
 
 #Test the loss functions
-
-target_values = [0, 1]
-prediction_values = np.arange(0, 1 + 0.001, 0.001)
     
     # binary cross entropy
+
 
 def test_specifi_value_binary_cross_entropy():
     "Test specific output value of the binary cross entropy, when target = 1"
@@ -510,8 +542,7 @@ def test_range_binary_cross_entropy_deriv(target, prediction):
 @given(target = st.integers(min_value=0, max_value=1),
        prediction = st.floats(min_value=1e-5, max_value=1-1e-5))
 def test_antisymmetric_property_binary_cross_entropy_deriv(prediction, target):
-    """Test that the result of the binary cross entropy derivative is antisymmetric 
-    for the change (prediction, target) -> (1-prediction, 1-target)"""
+    "Test that the result of the binary cross entropy derivative is antisymmetric for the change (prediction, target) -> (1-prediction, 1-target)"
     result = lf.binary_cross_entropy_deriv(prediction, target)
     reverse_result = lf.binary_cross_entropy_deriv(1 - prediction, 1 - target)
     assert np.abs(result + reverse_result) < 1e-5
@@ -612,3 +643,4 @@ def test_inf_values_cross_entropy_deriv(data):
     result = lf.cross_entropy_deriv(prediction, target)
     assert np.all(result > -np.inf) and np.all(result < np.inf)
 
+"""
