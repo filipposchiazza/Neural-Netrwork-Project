@@ -264,13 +264,50 @@ class Ann:
         >>> Ann.predict(inputs=data)
         
         """
-        prediction = self._forward_prop(inputs)
-        return prediction
         
+        if self.num_outputs == 1:
+            predictions = self._forward_prop(inputs)
+            predictions = np.reshape(predictions, (len(predictions), 1))
+        else:
+            inp = np.reshape(inputs, (-1, self.num_inputs))
+            predictions = np.zeros((len(inp), self.num_outputs))
+            for i in range(len(predictions)):
+                predictions[i] = self._forward_prop(inp[i])
+                
+        return predictions
+    
+    
+    
+    def _discretize_predictions(self, predictions):
+        """Discretize the values of predictions: values 0 or 1.
+        
+
+        Parameters
+        ----------
+        predictions : array-like
+            Array whose values are in the continuous range [0, 1].
+
+        Returns
+        -------
+        predictions_discr : array-like
+            Predictions with elements equal to 0 or 1.
+
+        """
+        if self.num_outputs == 1:
+            predictions_discr = np.where(predictions > 0.5, 1, 0)
+        else:
+            support = np.max(predictions, axis=1)
+            support = np.reshape(support, (-1,1))
+            predictions_discr = np.where(predictions == support, 1, 0)
+        
+        return predictions_discr
+    
+    
     
     def evaluate_classification(self, inputs, targets):
         """Evaluate the percentage of correct classification on the test dataset.
         
+
         Parameters
         ----------
         inputs : array_like
@@ -280,44 +317,26 @@ class Ann:
 
         Returns
         -------
-        predictions : array_like
-            Output of the neural network for the test dataset.
-        
-        Example
-        -------
-        >>Ann.evaluate_classification(inputs=dataset_test, targets=target_test)
+        predictions_discr : array-like
+            Predictions with elements equal to 0 or 1.
+        num_correct_prediction : int
+            Number of correct predictions.
+        percentage : float
+            Percentage of correct predictions.
 
         """
-        
-        if np.size(targets[0]) == 1:
-            predictions = self.predict(inputs)
-            predictions = np.reshape(predictions, (len(predictions), ))
-            targets = np.reshape(targets, (len(targets),))
-            predictions = np.where(predictions > 0.5, 1, 0)
-            correct_predictions = predictions == targets 
-            
-        else:
-            predictions = np.zeros((len(inputs), np.size(targets[0])))
-            for i in range(len(predictions)):
-                predictions[i] = self.predict(inputs[i])
-        
-            for i in range(len(predictions)):
-                support = np.max(predictions[i])
-                predictions[i] = np.where(predictions[i] == support, 1, 0)
-        
-            correct_predictions = np.all(predictions==targets, axis=1)
-            
-            
+        predictions = self.predict(inputs)
+        predictions_discr = self._discretize_predictions(predictions)
+        targets_reshaped = np.reshape(targets, (-1, self.num_outputs))
+        correct_predictions = np.all(predictions_discr == targets_reshaped, axis=1)
         num_correct_prediction = np.sum(correct_predictions)
         percentage = num_correct_prediction / len(predictions) * 100
-        
         print("Correct classification on the test dataset: {}/{}".format(num_correct_prediction, len(predictions)))
         print ("Percentage of correct classification on the test dataset: {:.2f}%".format(percentage))
         
-        return predictions, num_correct_prediction, percentage
-    
-    
-    
+        return predictions_discr, num_correct_prediction, percentage
+        
+ 
 ###############################################################################################################################    
     
     #Get methods
