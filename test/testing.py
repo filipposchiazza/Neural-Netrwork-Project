@@ -1,6 +1,6 @@
 "Testing"
 import sys
-sys.path.insert(0, '/home/filippo/Scrivania/Università/Magistrale/NeuralNetworkFromScratch/neuralnet')
+sys.path.insert(0, '/home/filippo/Documenti/Università/Magistrale/NeuralNetworkFromScratch/neuralnet')
 
 
 import numpy as np
@@ -17,7 +17,7 @@ import loss_functions as lf
 
 max_num_neurons = 10
 num_neuron = [i for i in range(1, max_num_neurons + 1)]
-
+"""
 ##################################################################################################################################
 
 #Test the costruction of the neural network (the function __init__)
@@ -304,74 +304,118 @@ def test_bilding_network_from_saving_parameters(inp, hidd, out, file_name):
         assert np.all(ann_loaded.get_weights()[i] == ann_test.get_weights()[i])
     assert ann_loaded.get_activation_function() == ann_test.get_activation_function()
     assert ann_loaded.get_loss_function() == ann_test.get_loss_function()
-
+"""
 ############################################################################################################################
 
 #Test the activation functions
 
-@given(data())
-def test_range_sigmoid(data):
-    "Test that the output of the sigmoid function is in the range [0, 1]"
-    lenght = data.draw(st.integers(min_value=1, max_value=100))
-    inputs = []
-    for i in range(lenght):
-        inputs.append(data.draw(st.floats(allow_nan=False, allow_infinity=True)))
-    inputs = np.array(inputs)
-    result = act.sigmoid(inputs)
-    assert np.all(result >= 0)  and np.all(result <= 1)
+    # sigmoid function
+
+def test_notable_sigmoid_values():
+    "Test some notable values of the sigmoid function"
+    assert np.abs(act.sigmoid(0) - 0.5 < 1e-10)
+    assert np.abs(act.sigmoid(1) - 0.73 < 0.2)
+    assert np.abs(act.sigmoid(-1) - 0.27 < 0.2)
+    assert np.abs(act.sigmoid(100) - 1. < 1e-10)
+    assert np.abs(act.sigmoid(-100) < 1e-10)
+
     
-    
-@given(data())
-def test_range_derivative_sigmoid(data):
-    "Test that all the elements of the sigmoid jacobian are in the range [0, 0.25]"
-    lenght = data.draw(st.integers(min_value=1, max_value=100))
-    inputs = []
-    for i in range(lenght):
-        inputs.append(data.draw(st.floats(allow_nan=False, allow_infinity=True)))
-    inputs = np.array(inputs)
-    jacobian = act.deriv_sigmoid(inputs)
-    assert np.all(jacobian >= 0)  and np.all(jacobian <= 0.25)
+def test_limit_case_sigmoid():
+    "Test the limit case when normally the exponential produce an inf value, avoided in the sigmoid implementation"
+    assert act.sigmoid(-800) < 1e-10
     
 
-@given(data())
-def test_range_softmax_function(data):
+@given(inputs = st.lists(st.floats(allow_nan=False, allow_infinity=True), min_size=1, max_size=100))
+def test_range_sigmoid(inputs):
+    "Test that the output of the sigmoid function is in the range [0, 1]"
+    result = act.sigmoid(np.asarray(inputs))
+    assert np.all(result >= 0)  and np.all(result <= 1)
+
+
+    # derivative sigmoid function 
+    
+    
+def test_notable_sigmoid_derivative_values_scalar_case():
+    "Test some notable values of the sigmoid derivative function in the scalar case"
+    assert np.abs(act.deriv_sigmoid([0]) - 0.25 < 1e-10)
+    assert np.abs(act.deriv_sigmoid([1]) - 0.20 < 1e-10)
+    assert np.abs(act.deriv_sigmoid([-1]) - 0.20 < 1e-10)
+    assert np.abs(act.deriv_sigmoid([100]) < 1e-10)
+    assert np.abs(act.deriv_sigmoid([-100]) < 1e-10)
+    
+    
+def test_notable_sigmoid_derivative_values_vectorial_case():
+    "Test some notable values of the sigmoid derivative function in the vectorial case"
+    x = [0, 1, 50]
+    expected_result = np.array([[0.25, 0., 0.], [0., 0.2, 0.], [0., 0., 0.]])
+    assert np.all(np.isclose(act.deriv_sigmoid(x), expected_result, rtol=0.1, atol=1e-5))
+    
+    
+@given(inputs = st.lists(st.floats(allow_nan=False, allow_infinity=True), min_size=1, max_size=100))
+def test_range_derivative_sigmoid(inputs):   
+    "Test that all the elements of the sigmoid jacobian are in the range [0, 0.25]"
+    jacobian = act.deriv_sigmoid(np.asarray(inputs))
+    assert np.all(jacobian >= 0)  and np.all(jacobian <= 0.25)
+    
+    
+@given(x = st.floats(allow_nan=False, allow_infinity=True))
+def test_symmetry_derivative_sigmoid(x):
+    "Test that the derivative of the sigmoid function is symmetric with respect the origin"
+    assert np.abs(act.deriv_sigmoid([x]) - act.deriv_sigmoid([-x])) < 1e-5
+    
+    
+    # softmax function
+    
+    
+def test_softmax_output_value():
+    "Test specific output value of the softmax function"
+    inputs = [8.0, 5.0, 0.0]
+    result = act.softmax(inputs)
+    expected_result = [0.9523, 0.0474, 0.0003]
+    evaluation = np.isclose(result, expected_result, rtol=0.1, atol=1e-5)
+    assert np.all(evaluation)
+      
+    
+@given(inputs = st.lists(st.floats(max_value=1e100, allow_nan=False, allow_infinity=False), min_size=1, max_size=100))
+def test_range_softmax_function(inputs):
     "Test the range of the softmax function"
-    lenght = data.draw(st.integers(min_value=1, max_value=100))
-    inputs = []
-    for i in range(lenght):
-        inputs.append(data.draw(st.floats(max_value=1e100, allow_nan=False, allow_infinity=False)))
     inputs = np.array(inputs)
     result = act.softmax(inputs)
     assert np.all(result >= 0) and np.all(result <= 1)
 
 
-@given(data())
-def test_normalization_softmax_function(data):
+@given(inputs = st.lists(st.floats(max_value=1e100, allow_nan=False, allow_infinity=False), min_size=1, max_size=100))
+def test_normalization_softmax_function(inputs):
     "Test that the sum of the elements of the softmax output is equal to one (condition to represent a probability)"
-    lenght = data.draw(st.integers(min_value=1, max_value=100))
-    inputs = []
-    for i in range(lenght):
-        inputs.append(data.draw(st.floats(max_value=1e100, allow_nan=False, allow_infinity=False)))
     inputs = np.array(inputs)
     result = act.softmax(inputs)
     summation = np.sum(result)
     assert np.abs(summation - 1) < 1e-15
- 
+    
+    
+    # derivative softmax function
 
-@given(data())
-def test_range_softmax_function_derivative(data): 
+    
+def test_trivial_values_derivative_softmax_function():
+    "Test specific output value of the softmax function derivative"
+    inputs = [0., 1.]
+    jacobian = act.deriv_softmax(inputs)
+    expected_jacobian = np.asarray([[0.19661193324148185, -0.19661193324148185], 
+                         [-0.19661193324148185, 0.19661193324148185]])
+    evaluation = np.isclose(jacobian, expected_jacobian, rtol=0.1, atol=1e-5)
+    assert np.all(evaluation)
+    
+
+@given(inputs = st.lists(st.floats(max_value=1e100, allow_nan=False, allow_infinity=False), min_size=1, max_size=100))
+def test_range_softmax_function_derivative(inputs): 
     "Test the range of the elements of the softmax function jacobian ([-1, 1])"
-    lenght = data.draw(st.integers(min_value=1, max_value=100))
-    inputs = []
-    for i in range(lenght):
-        inputs.append(data.draw(st.floats(max_value=1e100, allow_nan=False, allow_infinity=False)))
     inputs = np.array(inputs)
     jacobian = act.deriv_softmax(inputs)
     assert np.all(jacobian >= -1) and np.all(jacobian <= 1)
     
     
 ##################################################################################################################################
-
+"""
 #Test the loss functions
 
 target_values = [0, 1]
@@ -433,3 +477,4 @@ def test_inf_values_cross_entropy_deriv(data):
     result = lf.cross_entropy_deriv(prediction, target)
     assert np.all(result > -np.inf) and np.all(result < np.inf)
 
+"""
