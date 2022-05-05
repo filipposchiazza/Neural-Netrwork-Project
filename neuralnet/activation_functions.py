@@ -2,6 +2,7 @@
 
 import numpy as np
 
+
 ##############################################################################
 
 def sigmoid(x):
@@ -83,14 +84,6 @@ def deriv_softmax(x):
     i, j = np.indices((lenght, lenght))
     jacobian = np.where(i==j, a[i] * (1 - a[i]), - a[i] * a[j])
     
-    """
-    jacobian = np.zeros((lenght, lenght))
-    for i in range(lenght):
-        for j in range(lenght):
-            if i==j:
-                jacobian[i][j] = a[i] * (1 - a[i])
-            else:
-                jacobian[i][j] = - a[i] * a[j]"""
     return jacobian
 
-##############################################################################
+###############################################################################

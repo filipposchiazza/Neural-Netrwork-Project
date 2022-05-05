@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0, '/home/filippo/Scrivania/Università/Magistrale/NeuralNetworkFromScratch/neuralnet')
+sys.path.insert(0, '/home/filippo/Documenti/Università/Magistrale/NeuralNetworkFromScratch/neuralnet')
 
 import ann 
 import activation_functions as act 

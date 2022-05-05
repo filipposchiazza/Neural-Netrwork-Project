@@ -87,7 +87,7 @@ class Ann:
         # Create a list of array that will store the weights' derivatives
         self.weights_deriv = []
         for i in range(len(self.layers) - 1):
-            d_w = np.zeros((int(self.layers[i]) , int(self.layers[i+1])))
+            d_w = np.random.rand(int(self.layers[i]) , int(self.layers[i+1]))
             self.weights_deriv.append(d_w)
         
         # Create a list of array that will store the biases' derivatives
