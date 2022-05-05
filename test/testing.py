@@ -198,7 +198,7 @@ def test_limit_case_backward_propagation():
 
 @given(inp = st.integers(min_value=1, max_value=1e5),
        hidd = st.lists(st.integers(min_value=1, max_value=max_num_neurons), min_size=0, max_size=10),
-       out = st.integers(min_value=1, max_value=50))
+       out = st.integers(min_value=1, max_value=20))
 def test_weights_deriv_after_backprop(inp, hidd, out):
     "Test that, after backpropagation, the dimensionalities of the weights'derivatives is still the same as the ones of weights"
     network = ann.Ann(num_inputs=inp, num_hidden=hidd, num_outputs=out, 
@@ -611,7 +611,29 @@ def test_normalization_softmax_function(inputs):
     result = act.softmax(inputs)
     summation = np.sum(result)
     assert np.abs(summation - 1) < 1e-15
+
+
+@given(inputs = st.lists(st.floats(max_value=1e100, allow_nan=False, allow_infinity=False), min_size=1, max_size=100))
+def test_sorting_invariance(inputs):
+    "Test that sorting the inputs and than appling the softmax function is equivalent to sort the output of the softmax function"
+    inputs = np.asarray(inputs)
+    softmax = act.softmax(inputs)
+    softmax.sort()
+    inputs.sort()
+    softmax_after_sorting = act.softmax(inputs)
+    assert np.all(np.isclose(softmax, softmax_after_sorting))
     
+    
+@given(inputs = st.lists(st.floats(max_value=1e100, allow_nan=False, allow_infinity=False), min_size=1, max_size=100))
+def test_shuffle_invariance(inputs):
+    "Test that shuffling the inputs does not change the output of the softmax function"
+    inputs = np.asarray(inputs)
+    softmax = act.softmax(inputs)
+    softmax.sort()
+    np.random.shuffle(inputs)
+    softmax_after_shuffle = act.softmax(inputs)
+    softmax_after_shuffle.sort()
+    assert np.all(np.isclose(softmax, softmax_after_shuffle))
     
     # derivative softmax function
 
