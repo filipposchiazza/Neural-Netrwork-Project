@@ -1,8 +1,8 @@
 import numpy as np
 import os
 import json
-import activation_functions as act
-import loss_functions as lf
+from neuralnet import activation_functions as act
+from neuralnet import loss_functions as lf
 
 class Ann:
     

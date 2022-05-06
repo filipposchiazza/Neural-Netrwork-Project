@@ -1,10 +1,8 @@
-import sys
-sys.path.insert(0, '/home/filippo/Documenti/Università/Magistrale/NeuralNetworkFromScratch/neuralnet')
 
 import numpy as np
-import ann
-import activation_functions as act
-import loss_functions as lf
+from neuralnet import ann
+from neuralnet import activation_functions as act
+from neuralnet import loss_functions as lf
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler

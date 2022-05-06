@@ -1,11 +1,12 @@
 from setuptools import setup
+from setuptools import find_packages
 
-with open("README", 'r') as f:
+with open("README.md", 'r') as f:
     long_description = f.read()
 
 setup(
    name='neuralnet',
-   version='1.0',
+   version='0.1.0',
    description='Implementation of a neural network, using only numpy library',
    license="MIT",
    long_description=long_description,
@@ -13,7 +14,7 @@ setup(
    author='Filippo Schiazza',
    author_email='filipposchiazza97@gmail.com',
    url="https://github.com/filipposchiazza/NeuralNetworkFromScratch",
-   packages=['neuralnet'],  #same as name
+   packages=find_packages(),  #same as name
    install_requires=['numpy', 'sklearn', 'hypothesis'], #external packages as dependencies
    scripts=[
             'scripts/binary_classification.py',

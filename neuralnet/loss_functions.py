@@ -1,6 +1,6 @@
 #Define different types of Loss functions
-import numpy as np
 
+import numpy as np
 
 clip_value = 1e-15
 ###############################################################################
